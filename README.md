@@ -315,7 +315,7 @@ README.md
 
 在翻译之前先简单说说翻译的原则，翻译主要讲究信、达、雅，但在实际的过程中比较难做到，所以建议不要过分追求这个 3 个东西，翻译一个游戏 Mod 而已，不是在翻译什么世界名著，只要做好起码的信和达就好，在信的最低前提下能够读起来通顺自然，整体的可读性是高于一切的，所以也不要太过于拘泥于原文，太过于拘泥于原文在某些情况下会导致翻译出来的效果非常的硬，整条语句读起来不自然。
 
-翻译过程中请保持翻译的前后一致性，尽量做到同一个单词或同一个词根演变而来的词在上下文中的译法保持统一。请尽量参考游戏自带的官方译法。
+翻译过程中请保持翻译的前后一致性，尽量做到同一个单词或同一个词根演变而来的词在上下文中的译法保持统一。也请尽量参考游戏自带的官方译法。
 
 ## 1.常规字段文本替换
 
@@ -435,7 +435,7 @@ Localization
 
 在游戏`GameData`目录下任意位置新建一个文本文件，修改后缀为`.cfg`然后用 VS Code 打开
 
-对于刚才演示例子的汉化 Patch 写法
+对于刚才演示例子的汉化 Patch 写法（只汉化部分字段）
 
 ```
 // My_SPELocPatch.cfg
@@ -448,11 +448,11 @@ Localization
 
 首先解释一下这个 Patch：
 
-- `@PART[SEP_22_SHIP_CREW]`  ----- 定位节点，MM 会定位到 `name` 为 `SEP_22_SHIP_CREW` 的 `Node`，即刚才文件中的那个 PART 节点，`@`代表对这个节点进行`编辑/修改`操作
+- `@PART[SEP_22_SHIP_CREW]`  ----- 定位节点，MM 会定位到 `name` 为 `SEP_22_SHIP_CREW` 的 PART `Node`，即刚才文件中的那个 PART 节点，`@`代表要对这个节点进行`编辑/修改`操作
 - `@title = Donnager MK-1乘员模块 `  ---- 将这个节点的 `title` 字段的值从原来的`Donnager MK-1 Crew Module`变为`Donnager MK-1乘员模块`
 - `@description = 当Jeb看到那巨大的 Donnager 级航天器时，他问……` ----- 同`@title`用法。
 
-那么启动游戏后，MM 会读取这个 Patch 文件，然后将name 为 SEP_22_SHIP_CREW 的 PART 节点中的字段 title 和description 改成我们 patch 中的值。
+那么启动游戏后，MM 会读取这个 Patch 文件，然后将 name 为 SEP_22_SHIP_CREW 的 PART 节点中的字段 title 和description 改成我们 patch 中的值。
 
 如果文件中还有其他子节点中包含了其他可本地化的字段，如上述例子中，下面还有几个地方未汉化完全
 
@@ -483,7 +483,7 @@ PART
 }
 ```
 
-那么 Patch 需要改写成这样：
+那么 Patch 需要继续进一步的完善：
 
 ```
 @PART[SEP_22_SHIP_CREW]
@@ -505,7 +505,7 @@ PART
 }
 ```
 
-可以看到我在定位 2 个 MODULE 子节点的时候使用了一个`:HAS[]`语法段，该语法段是让 MM 查找**有**字段`animationName`且值为`Hatch_Transform`或`SS_Airlock_Door_Transform` 的MODULE，因为这个两个 MODULE 节点的 name 字段的值都是一样的，都是 `ModuleAnimateGeneric`，所以不能够采用像 `PART` 那样的定位节点方式，否则会出现问题。在这个 patch 中，我通过匹配字段 `animationName` 来查找，因为这两个字段在该文件中都是独一无二的，所以能够确保MM能够匹配到正确的MOUDLE节点，然后修改相应的字段。
+可以看到我在定位 2 个 MODULE 子节点的时候使用了一个`:HAS[]`语法段，该语法段是让 MM 查找**有**字段`animationName`且值为`Hatch_Transform`或`SS_Airlock_Door_Transform` 的MODULE，因为这两个 MODULE 节点的 name 字段的值都是一样的，都是 `ModuleAnimateGeneric`，所以不能够采用像 `PART` 那样的定位节点方式，否则达不到我们的期望。在这个 patch 中，我通过匹配字段 `animationName` 来查找，因为这两个字段的值对于这个 PART 节点来说是独一无二的，所以能够确保 MM 能够匹配到正确的 MOUDLE 节点，然后修改相应的字段。
 
 当然，这个方法也同样能够适用于本地化，即
 
@@ -529,15 +529,15 @@ PART
 }
 ```
 
-然后就和之前部件本地化的操作一样了，你可以自己评估一下其中的工作量。
+然后就和之前部件本地化的操作一样了，你可以自己评估一下其中的工作量，然后根据自己的需要进行选择。
 
-当然MM还能做到更多，不过这就需要读者自己去官方 Wiki + 自己的亲手实验来尝试了，偷偷告诉你，我的 fork 里有不完整翻译的 MM wiki。
+当然MM还能做到更多，不过这就需要读者自己去官方 Wiki + 自己的亲手实验来尝试了，偷偷告诉你，我的 MM fork 里有不完整翻译的 wiki。
 
 这里有个小提示：不要想着利用 MM Patch 来对 Localization 节点进行修改，比如你想要这样`@Localization { @zh-cn{  @#LOC_XXXX = XXXX } }`，你会发现进入游戏后没有啥用，虽然用 ALT + F12 打开调试菜单-数据库-重新载入本地化文本，然后切换一下场景（比如进入追踪站场景然后切回到航天中心）对于一些mod 可能有效果，但我还是建议不要这么干，很浪费时间。
 
-### Kerbalism 的 Config
+### Kerbalism 的 Configure
 
-接下来回到之前提到的 Kerbalism 配置文件，因为这种 Mod 比较特殊，所以单独拿出来讲一下，Kerbalism 的这些在 MODULE[Configure] 节点下的 title 和SETUP子节点下的 name 字段实际上都是可以本地化的，但是不能通过直接修改和寻常本地化的方式，而是只能采用 MM Patch：
+接下来回到之前提到的 Kerbalism 配置文件，因为这种 Mod 比较特殊，所以单独拿出来讲一下，Kerbalism 的这些在 MODULE[Configure] 节点下的 title 和SETUP 子节点下的 name 字段实际上都是可以本地化的，但是不能通过直接修改和寻常本地化的方式，而是只能采用 MM Patch：
 
 ```
 @PART[*]:HAS[@MODULE[Configure]]:FINAL
@@ -605,32 +605,32 @@ PART
 }
 ```
 
-示例代码没有进行本地化，但我想聪明的你已经知道如果要本地化需要怎么做了。
+示例代码没有考虑本地化，但我想聪明的你已经知道如果要本地化需要怎么做了。
 
-接着解释这个 patch 的作用，首先在第一行我使用了一个 `:FINAL` 修饰符，代表这个 patch 将会在最后应用，即这个Patch 将会在 MM 应用完毕所有的 Kerbalism 的 patch 后，才会最后被应用到游戏中。注：示例 patch 内容非完整 patch 内容。
+接着解释这个 patch 的作用，首先在第一行我使用了一个 `:FINAL` 修饰符，代表这个 patch 将会在最后应用，即这个Patch 将会在 MM 应用完毕所有的 Kerbalism 自己的 patch 后，才会最后被应用到游戏中。
 
-在游戏中可以看到这些都变成了中文，且 Kerbalism 的功能也是完全正常的。
+在游戏中可以看到这些都变成了中文，且 Kerbalism 的功能也是完全正常的。（描述是中文是因为我在别的地方也写了一个 patch）
 
 ![](./img/KerbalismPatch.png)
 
-
+总之，要利用 MM patch 对 Mod 进行汉化首先需要你能够看懂 Mod 的 Patch 中的语法，然后才能根据 Mod 的实际情况进行具体问题具体分析。
 
 ## 3.DLL (plugin) 硬编码
 
 本章建议读者具备一定的计算机编程方面的能力，当然实在不懂也可以随便往下看看。
 万变不离其宗，一般都是统一采用游戏官方提供的多语言本地化接口，即`KSP.Localization.Localizer.Format()`或`KSP.Localization.Localizer.GetStringByTag()`方法，待会配合[这个链接](https://www.kerbalspaceprogram.com/ksp/api/class_k_s_p_1_1_localization_1_1_localizer.html)讲解。
 
-要对 DLL 内部的硬编码文本进行本地化/翻译/汉化操作，需要一个能够编译 C# 代码的工具，这个工具一般称为 IDE，在 IDE 的选择中你可以选择微软的 VS 或是JetBrain 的 Rider都可以，本章节主要是以 VS 2022 Community 为例。
+要对 DLL 内部的硬编码文本进行本地化/翻译/汉化操作，需要一个能够编译 C# 代码的工具，这个工具一般称为 IDE，在 IDE 的选择这方面你可以选择微软的 VS 或是 JetBrain 的 Rider都可以，本章节主要是以 VS 2022 Community 为例。
 
 ### 环境搭建
 
-首先去官网 https://visualstudio.microsoft.com/zh-hans/vs/ 下载 Community 版本并安装，安装过程没什么好说的，主要给你指个官方下载链接
+首先去官网 https://visualstudio.microsoft.com/zh-hans/vs/ 下载 Community 版本并安装，安装过程没什么好说的，主要给你指个官方的下载链接。
 
-一般来说安装完成后整个的环境搭建就算完成了，毕竟 IDE 就叫集成开发环境。
+一般来说安装完成后整个的环境搭建就算完成了，毕竟 IDE 翻译过来就叫集成开发环境。
 
 ### 载入 Mod 解决方案
 
-下载别人的源码后，直接用 VS 打开 .sln 工程文件，这个在微软叫做解决方案文件，如果 Mod 没有解决方案文件则找到 .csproj 文件右键用 VS 打开，打开某个 Mod 的工程文件载入后如图所示，图中的窗口布局可能会跟你们不同，因为我调整过。本节以 **Starship-Expansion-Project** 为例：
+下载别人的源码后，直接用 VS 打开 .sln 工程文件，这个在微软叫做解决方案文件，如果 Mod 没有解决方案文件则找到 .csproj 文件右键用 VS 打开，打开某个 Mod 的工程文件载入后如图所示，图中的窗口布局可能会跟你们不同，因为我调整过。以 **Starship-Expansion-Project** 为例：
 
 ![图1](./img/VSLoad.png)
 
@@ -640,18 +640,22 @@ PART
 
 ### 添加引用
 
-添加引用也有几种方式。
+添加引用也有下列方式：
 
 1. 在【引用】处右键-添加引用，在弹出的窗口左侧点击【浏览】，然后右下方按钮【浏览】，在弹出的文件选择窗口中定位到游戏目录下的KSP_x64_Data/Managed 文件夹，此时根据缺失的文件按需添加引用文件，然后确定，可以看到黄色的感叹号消失。然后继续添加相应的文件即可。
 2. 在加载的项目右键然后单击【属性】，然后找到【引用路径】，单击【浏览】，定位到KSP_x64_Data/Managed，然后确定，单击【添加文件夹】，此时看到大部分黄色的感叹号消失。
 
-可以发现该 Mod 的存在 B9PartSwitch 和 TundraExploration 这个两个引用仍然为感叹号，这两个引用分别为其他 Mod - B9PartSwitch 和 TundraExploration 的 DLL 文件，同样的也需要添加引用，首先下载这两个 Mod ，然后以同样的方式添加引用。
+发现该 Mod 的存在 B9PartSwitch 和 TundraExploration 这个两个引用仍然为感叹号，是因为这两个引用分别为其他 Mod - B9PartSwitch 和 TundraExploration 的 DLL 文件，怎么引用呢？首先找到并下载这两个 Mod ，解压后放在任意位置，然后以同样的方式为这两个文件添加引用。
 
-添加好引用后，全选所有引用，然后在属性窗口中将复制本地的值全部变成 False，这样当生成DLL文件后就不会将文件目录弄的一团糟。此外项目右键-属性-生成事件，查看是否是有任何生成后事件命令行，有则删除掉，防止生成时报错。
+添加好引用后，全选所有引用，然后在属性窗口中将复制本地的值全部变成 False，这样当生成DLL文件后就不会将文件目录弄的一团糟。此外在项目上右键-属性-生成事件，查看是否是有任何生成后事件命令行，有则删除掉，防止生成时报错。
 
 判断引用是否添加完成可以通过生成的方式查看，当下方输出窗口有显示生成成功则意为着引用已经成功。
 
 注意：不同 Mod 都有可能有自己的构建方式，应以 Mod 的 GitHub 页面的说明为主。
+
+### 开始
+
+
 
 ### GUILayout
 
