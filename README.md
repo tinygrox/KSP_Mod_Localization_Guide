@@ -206,11 +206,11 @@ Localization
 
 ## 2. 认识 MM Patch
 
-这个内容属于大多数 mod 的前置依赖 mod - Module Manager 的内容，为了方便下面用 MM 来指代它。MM 提供了一系列操作 KSP 配置文件（CFG）的方法，方便那些 Mod 制作者可以在不修改原文件的情况下对原版或是其他 mod 的内容进行修改——你只需要写个 "patch"（补丁） 就可以轻松做到。这个 patch 也属于是 KSP 的 CFG 配置文件，但需要遵循由 MM 定义的语法规则（好在不是很难）。
+这个内容属于大多数 mod 的前置依赖 mod - Module Manager 的内容，为了方便下面用 MM 来指代它。MM 提供了一系列操作 KSP 配置文件（CFG）的方法，方便那些 Mod 制作者可以在不修改原文件的情况下对原版或是其他 mod 的内容进行修改——你只需要写个 "patch"（补丁） 就可以轻松做到。这个 patch 能够对原版的 CFG 配置文件中的节点进行一系列操作（取决于你要实现什么），但需要遵循由 MM 定义的语法规则（好在不是很难）。应用场景有如你对原版某个引擎的性能感到不满意，想要自己“修复”一下。
 
 因为相当部分的 mod 在制作过程中使用到了 MM 来对部件的名称等字段进行了添加、修改操作，所以关于 MM 的语法我认为是有必要学习的，能够帮助翻译工作的正常展开。
 
-下面举个例子，属于 Mod `Kerbalism` 的内容，在路径 `GameData/KerbalismConfig/System/Habitat.cfg` 中可以找到内容
+下面举个例子，属于 Mod `Kerbalism` 的内容，在路径 `GameData/KerbalismConfig/System/Habitat.cfg` 中可以找到：
 
 ```
 @PART[mk1pod,mk1pod_v2]:NEEDS[FeatureHabitat]:AFTER[KerbalismDefault]
@@ -227,8 +227,8 @@ Localization
 
 节点前的`@`属于 MM 语法规则中的编辑修改操作，对了，这整个文件就是称为一个 patch 文件，忘了说了。
 
-先不说后面的 NEEDS 和 AFTER 是啥，第一行的意思是让 MM 找到 name 为 mk1pod 和 mk1pod_v2 （我们亲爱的Mk1指令舱）的 PART 节点
-然后`@title`意为修改节点中的`title`字段，`^=`操作符代表使用正则表达式进行值的【操作】，第一个字符`:`将会被识别为分隔符，实际上可以用其他字符代替，但最好保持用冒号，除非你的语句中需要冒号，分隔符用来分隔正则匹配字段和值，接下来的`(.)$`则是正则表达式的语法内容，其中`$`意为匹配字符的末尾，`(.)`意为匹配任意字符，换行符除外。扯远了，这一行修改的内容是：在 title 后面添加`\n\n<color=orange>Unpressurized.</color> Bring your own space suit.`字段，`<color=orange></color>`这种类似于网页中的标签写法在 KSP 中是可以识别的，实际上是 Unity 中的富文本（rich-text），所以后续的翻译工作中遇到类似于这种东西，就不要翻译，保持原样，千万不要整个翻译为`<颜色=橙色>未加压。</颜色> 带上你的太空服。`，你只需这样`<color=orange>未加压。</color> 带上你的太空服。`就可以了。
+先不说后面的 NEEDS 和 AFTER 是啥，第一行的意思是让 MM 找到 name 为 mk1pod 和 mk1pod_v2 （我们亲爱的 Mk1 指令舱）的 PART 节点
+然后`@title`意为修改节点中的`title`字段，`^=`操作符代表使用正则表达式进行值的【操作】，第一个字符`:`将会被识别为分隔符，实际上可以用其他字符代替，但最好保持用冒号，除非你的语句中需要冒号，分隔符用来分隔正则匹配字段和值，接下来的`(.)$`则是正则表达式的语法内容，其中`$`意为匹配字符的末尾，`(.)`意为匹配任意字符，换行符除外。扯远了，这一行修改的内容是：在 title 后面添加`\n\n<color=orange>Unpressurized.</color> Bring your own space suit.`字段，`<color=orange></color>`这种类似于网页中的标签写法在 KSP 中是可以识别的，实际上属于 Unity 中的富文本（rich-text）内容，所以后续的翻译工作中遇到类似于这种文本形式，就不要翻译，保持原样，千万不要整个翻译为`<颜色=橙色>未加压。</颜色> 带上你的太空服。`，你只需这样`<color=orange>未加压。</color> 带上你的太空服。`就可以了。
 
 `@description`的功能和上述一样。
 
@@ -537,7 +537,7 @@ PART
 
 ### Kerbalism 的 Configure
 
-接下来回到之前提到的 Kerbalism 配置文件，因为这种 Mod 比较特殊，所以单独拿出来讲一下，Kerbalism 的这些在 MODULE[Configure] 节点下的 title 和SETUP 子节点下的 name 字段实际上都是可以本地化的，但是不能通过直接修改和寻常本地化的方式，而是只能采用 MM Patch：
+接下来回到之前提到的 Kerbalism 配置文件，因为这种 Mod 比较特殊，所以单独拿出来讲一下，在 Kerbalism 中，有大量的文本不属于硬编码，这些文本写入在KerbalismConfig 里，这些在 MODULE[Configure] 节点下的 title 和SETUP 子节点下的 name 字段实际上都是可以本地化的，但是不能通过直接修改和寻常本地化的方式，而是只能采用 MM Patch：
 
 ```
 @PART[*]:HAS[@MODULE[Configure]]:FINAL
@@ -615,6 +615,8 @@ PART
 
 总之，要利用 MM patch 对 Mod 进行汉化首先需要你能够看懂 Mod 的 Patch 中的语法，然后才能根据 Mod 的实际情况进行具体问题具体分析。
 
+贴心提示：如果感觉看 Patch 看得头疼，可以在 GameData 目录下找到 **ModuleManager.ConfigCache** 文件用编辑器打开查看相关节点应用 patch 后的结果。
+
 ## 3.DLL (plugin) 硬编码
 
 本章建议读者具备一定的计算机编程方面的能力，当然实在不懂也可以随便往下看看。
@@ -649,9 +651,9 @@ PART
 
 添加好引用后，全选所有引用，然后在属性窗口中将复制本地的值全部变成 False，这样当生成DLL文件后就不会将文件目录弄的一团糟。此外在项目上右键-属性-生成事件，查看是否是有任何生成后事件命令行，有则删除掉，防止生成时报错。
 
-判断引用是否添加完成可以通过生成的方式查看，当下方输出窗口有显示生成成功则意为着引用已经成功。
+判断引用是否正确完成添加可以通过生成（编译）的方式查看，能成功编译，下方输出窗口有显示生成成功则意为着引用已经成功。
 
-注意：不同 Mod 都有可能有自己的构建方式，应以 Mod 的 GitHub 页面的说明为主。
+注意：不同 Mod 都有可能有自己的构建方式，如果 mod 构建方式比较特殊其 readme 都会有说明如何构建（比如 Kerbalism），应以 Mod 的 GitHub 页面的说明为主。
 
 ### 开始
 
