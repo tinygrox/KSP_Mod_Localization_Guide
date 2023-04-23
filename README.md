@@ -419,7 +419,53 @@ Localization
 }
 ```
 
-如果你了解宏定义的意思，那么此时你就知道为什么我之前说本地化标签用宏定义来概括更加准确了。当然，读者在实际操作中还是要根据 Mod 的实际情况进行本地化修改，还是在 Kerbalism 中，由于作者写了大量的 Patch 文件，使用了大量 title 字段来匹配MODULE [ Configure ]节点，所以任何 name = Configure 的 MODULE 节点下的字段 title 都不能被本地化，以及 SETUP 子节点下的字段 name。有兴趣的读者可以查看GameData\KerbalismConfig\Profiles\Default.cfg。
+如果你了解宏定义的意思，那么此时你就知道为什么我之前说本地化标签用宏定义来概括更加准确了。但是，在实际操作中还是要根据 Mod 的实际情况具体情况具体分析，什么都改只会害了你自己。还是拿 Kerbalism 作为例子，首先打开文件**KerbalismConfig/Profiles/Default.cfg**：
+
+找到这一行并看到此处：
+
+```
+@PART[*]:HAS[#CrewCapacity[>0],!MODULE[KerbalSeat]]:NEEDS[ProfileDefault]:FOR[KerbalismDefault]
+{
+    ...
+    MODULE
+    {
+        name = Configure
+        title = Pod
+        slots = 2
+        ...
+        SETUP
+        {
+            name = Scrubber
+            ...
+        }
+        ...
+    }
+    ...
+}
+```
+
+该部分代码会为所有的、存在字段 **CrewCapacity** 且值 > 0 的、没有 `name = KerbalSeat` 的 `MODULE` 的**所有**部件添加了一个 `name = Cofigure`、`title = Pod`的、还有多个子节点的 `MODULE` 节点。
+
+然后再往下找到：
+
+```
+@PART[*]:HAS[@MODULE[Configure]]:NEEDS[ProfileDefault]:FOR[zzzKerbalismDefault]
+{ 	
+  @MODULE[Configure]:HAS[#title[Pod]]
+  { 
+    @UPGRADES 
+    { 
+      ...
+    } 
+  }
+  @MODULE[Configure]:HAS[#title[Life?Support]] { ... }
+  @MODULE[Configure]:HAS[#title[Chemical?Plant]] { ... }
+}
+```
+
+可以看到该部分会对所有的、存在 `name = Configure` 的 `MODULE` 节点的 `PART` 节点中、带有 `title = Pod` 的  `MODULE[Configure]` 节点进行修改。如果你对之前的部分中的 `title` 进行了本地化操作，那么其他的剩下的这些语句将不会生效，此时你已经将整个 patch 的逻辑给弄坏了，进入游戏后也会发现 Kerbalism 的一堆功能都将不会正常运行。
+
+由于作者在其大量的 Patch 中使用了大量 `title` 字段来匹配 `MODULE [ Configure ]` 节点，所以任何 `name = Configure` 的 `MODULE` 节点下的字段 `title` 都不能被本地化，以及 SETUP 子节点下的字段 `name`(但是 `desc` 可以)。有兴趣的读者可以自行查看GameData\KerbalismConfig\Profiles\Default.cfg。
 
 但是这也不是没有办法改成中文，请看下节的【MM Patch 法】。
 
@@ -607,7 +653,7 @@ PART
 
 示例代码没有考虑本地化，但我想聪明的你已经知道如果要本地化需要怎么做了。
 
-接着解释这个 patch 的作用，首先在第一行我使用了一个 `:FINAL` 修饰符，代表这个 patch 将会在最后应用，即这个Patch 将会在 MM 应用完毕所有的 Kerbalism 自己的 patch 后，才会最后被应用到游戏中。
+接着解释这个 patch 的作用，首先在第一行我使用了一个 `:FINAL` 修饰符，代表这个 patch 将会在最后应用，即这个Patch 将会在 MM 应用完毕所有 Kerbalism 自己的 patch 后，才会最后被应用到游戏中。
 
 在游戏中可以看到这些都变成了中文，且 Kerbalism 的功能也是完全正常的。（描述是中文是因为我在别的地方也写了一个 patch）
 
@@ -615,7 +661,7 @@ PART
 
 总之，要利用 MM patch 对 Mod 进行汉化首先需要你能够看懂 Mod 的 Patch 中的语法，然后才能根据 Mod 的实际情况进行具体问题具体分析。
 
-贴心提示：如果感觉看 Patch 看得头疼，可以在 GameData 目录下找到 **ModuleManager.ConfigCache** 文件用编辑器打开查看相关节点应用 patch 后的结果。
+贴心提示：如果感觉看 Patch 看得头疼，可以在 GameData 目录下找到 **ModuleManager.ConfigCache** 文件用编辑器打开查看相关节点被 MM 应用 patch 后的结果。
 
 ## 3.DLL (plugin) 硬编码
 
@@ -700,7 +746,7 @@ namespace StarshipExpansionProject
 // ... // 
 ```
 
-直接修改的方式太简单就不深究了，接下来探寻如何本地化，对于本地化，也很简单，直接将"Pitch Authority"替换为本地化标签即可，如我现在就将其替换为我自己在 en-us.cfg 中创建的本地化标签 `#SPE_Plugin_PitchAuthority`：
+直接修改的方式太简单就不深究了，接下来探寻如何本地化，对于本地化，相信聪明的你已经看出来了，很简单，直接将"Pitch Authority"替换为本地化标签即可，如我现在就将其替换为我自己在 en-us.cfg 中创建的本地化标签 `#SPE_Plugin_PitchAuthority`：
 
 ```c#
 // ... //
@@ -709,7 +755,7 @@ namespace StarshipExpansionProject
 // ... //
 ```
 
-这就完成了，但是为什么这样就行了呢？对于`guiName`这个变量，其实是`KSPField`中继承特性KSP的另一个特性`FieldAttribute`的一个属性，这个属性 `guiName` 有 get 和 set 两个访问器，通过使用 dnSpy 工具对引用文件进行反编译可以看到如下代码：
+这就完成了，但是为什么这样就行了呢？对于`guiName`这个变量，其实是`[KSPField]`中继承特性KSP的另一个特性`[FieldAttribute]`的一个属性，这个属性 `guiName` 有 get 和 set 两个访问器，通过使用 dnSpy 工具对引用文件进行反编译可以看到如下代码：
 
 ```C#
 // ... //
@@ -731,7 +777,7 @@ private string _guiName;
 
 可以看到在 set 访问器中，该属性的赋值行为是赋 `Localizer.Format()`方法返回的值，也就是说，`guiName` 的本地化实现就是通过调用`KSP.Localization.Localizer.Format()` 这个方法而实现的，这个方法会返回对应本地化标签如 `#autoLOC_6013041` 的值，即等效为`guiName = Localizer.Format("#autoLOC_6013041");`
 
-
+你一定开始想：“懂了，以后遇到文本就直接调用 `Localizer.Format()` 就完事了”。首先在做法上，这是没有一点问题，因为这就是本地化会用到的方法，但是使用太多会产生性能问题，所以对于那些静态文本，推荐使用 `Localizer.GetStringByTag()`，只有当文本中存在变量参数，我们才使用 `Localizer.Format()` 。那为何会产生性能问题呢？因为这个方法是直接读表，速度会比另一个快，另一个则是……反正不是读表，所以速度慢，如要展开说明，又要花费篇幅，所以先按下不表。
 
 
 
@@ -778,13 +824,13 @@ private string _guiName;
 
 这个问题在你使用了 VS Code 后将得到解决！
 
-
+[这里应该有个图片]
 
 ### 航天词汇笔记
 
 因为英语这门语言的特殊性，英语中单词普遍，嗯，怎么形容好呢？先用【一词多义】简单概括吧，所以很多时候看翻译出来的文本时会感觉非常怪异，每个单词都懂啥意思，连在一起就看不懂了。
 
-在不同的语境中，同一个单词翻译成中文后会有多种含义，有些单词的各个含义之间好像风马牛不相及，当然，这个特性是从翻译后的现代中文上来说的，在英语原文中则会是一种很正常的表达，英文单词更多是侧重于表示一个抽象出来的概念，而现在使用的中文的词语更多是侧重于形象的表达。
+在不同的语境中，同一个单词翻译成中文后会有多种含义，有些单词的各个含义之间好像风马牛不相及，当然，这个特性是从翻译后的现代中文上来说的，在英语原文中则会是一种很正常的表达（所以说翻译真的很重要），英文单词更多是侧重于表示一个抽象出来的概念，而现在使用的中文的词语更多是侧重于形象的表达。
 
 下面列出了在航空航天相关的语境中的部分“多义单词”的中文表达。
 
