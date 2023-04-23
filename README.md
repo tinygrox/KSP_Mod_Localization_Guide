@@ -2,7 +2,7 @@
 
 # 零、前言
 
-此为坎巴拉太空计划 1 的 Mod 汉化大纲。相信存在相当一部分人在游玩了大量的不支持中文/本地化的 Mod 后，萌生了想要自己做汉化的想法，但是鉴于国内 KSP 社区的封闭性以及我国互联网的一些特殊性，与其他游戏相比，导致很多应该出现的教程全都没有出现或是遗失。
+此为坎巴拉太空计划 1 的 Mod 汉化大纲。相信存在相当一部分人在游玩了大量的不支持中文/本地化的 Mod 后，萌生了想要自己做汉化的想法，但是鉴于国内 KSP 社区的封闭性以及我国互联网的一些特殊性，与其他游戏相比，很多应该出现的教程全都没有出现或是遗失。
 
 本人于 2019 年入坑了坎巴拉太空计划，迄今为止为许多 KSP 社区 Mod 实现了本地化/添加中文翻译，要挑几个有工作量的 Mod 出来，主要有 MechJeb2 和 Kerbalism。这期间也积累了很多有用的知识，因为大学专业性质，主要积累了大量的 C# 编程技巧，也半只脚踏入了汉化 Unity 游戏的大门，当然啦，还有很多航天相关的知识。
 
@@ -622,13 +622,17 @@ PART
 本章建议读者具备一定的计算机编程方面的能力，当然实在不懂也可以随便往下看看。
 万变不离其宗，一般都是统一采用游戏官方提供的多语言本地化接口，即`KSP.Localization.Localizer.Format()`或`KSP.Localization.Localizer.GetStringByTag()`方法，待会配合[这个链接](https://www.kerbalspaceprogram.com/ksp/api/class_k_s_p_1_1_localization_1_1_localizer.html)讲解。
 
-要对 DLL 内部的硬编码文本进行本地化/翻译/汉化操作，需要一个能够编译 C# 代码的工具，这个工具一般称为 IDE，在 IDE 的选择这方面你可以选择微软的 VS 或是 JetBrain 的 Rider都可以，本章节主要是以 VS 2022 Community 为例。
+要对 DLL 内部的硬编码文本进行本地化/翻译/汉化操作，需要一个能够编译 C# 代码的工具，这个工具一般称为 IDE，在 IDE 的选择这方面你可以选择微软的 VS 或是 JetBrain 的 Rider都可以，本章节主要以 VS 2022 Community 为例。
 
 ### 环境搭建
 
 首先去官网 https://visualstudio.microsoft.com/zh-hans/vs/ 下载 Community 版本并安装，安装过程没什么好说的，主要给你指个官方的下载链接。
 
 一般来说安装完成后整个的环境搭建就算完成了，毕竟 IDE 翻译过来就叫集成开发环境。
+
+### 开始
+
+接下来的流程将默认读者具有一定的 .NET C# 编程知识水平，大概需要学习到能够明白 C# 的类、类方法、继承、反射（Reflection）、特性（Attribute）等内容。
 
 ### 载入 Mod 解决方案
 
@@ -655,7 +659,79 @@ PART
 
 注意：不同 Mod 都有可能有自己的构建方式，如果 mod 构建方式比较特殊其 readme 都会有说明如何构建（比如 Kerbalism），应以 Mod 的 GitHub 页面的说明为主。
 
-### 开始
+继续我们的汉化工作。简述一遍汉化的基本流程，将整个流程抽象一下其实就是：文本查找—替换/本地化—编译/翻译—最后保存。
+
+一开始，你发现自己根本看不懂别人写的代码，感到汉化无从下手。其实不需要有那么多的顾虑，因为我们不需要完全看懂整个 Mod 的代码逻辑，我们只需要关注 Mod 的文本界面相关的代码逻辑就行，况且很多 Mod 作者是不写注释的，在看不懂代码的阶段，唯有多实践，多搜索，不断尝试才难够帮助你度过这个阶段。
+
+### 文本查找
+
+如果还没有打开 **Starship-Expansion-Project** 的工程文件，先用 VS 打开工程，然后啪的一下很快啊，在**Modules/ModuleSEPControlSurface.cs**下可以看到这些代码:
+
+```C#
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using TundraExploration.Utils;
+using UnityEngine;
+
+namespace StarshipExpansionProject
+{
+    public class ModuleSEPControlSurface : ModuleLiftingSurface, IMultipleDragCube, ITorqueProvider
+    {
+        // ... // 
+        [KSPAxisField(axisMode = KSPAxisMode.Incremental, guiActive = true, guiActiveUnfocused = true, guiFormat = "0", guiName = "#autoLOC_6013041", guiUnits = "°", incrementalSpeed = 50f, isPersistant = true, maxValue = 100f, minValue = -100f, unfocusedRange = 25f)]
+        [UI_FloatRange(affectSymCounterparts = UI_Scene.All, maxValue = 90f, minValue = 0f, scene = UI_Scene.All, stepIncrement = 0.1f)]
+        public float deployAngle = -1f;
+        // ... //
+    }
+}
+```
+
+是不是看到了一个熟悉的文本`guiName = "#autoLOC_6013041"`（注：`#autoLOC_6013041 = 偏转角度`），处在一个`[]`里，像这些在类或类成员上方的用中括号括起来的`[...]`内容，如`deployAngle`变量上方的 `[KSPAxisField(...)]`和`[UI_FloatRange(...)]`，在 C# 叫做特性，微软给出的定义是用来关联元数据（metadata）或是提供额外的说明性信息的一种方法，有兴趣看看[这个链接](https://learn.microsoft.com/en-us/dotnet/csharp/advanced-topics/reflection-and-attributes/)。然后刚才这些和下面的 `[KSPField(...)]` 都是 KSP 里自己写的自定义特性，由**Assemblebly-Csharp**引用提供。
+
+好了说太多你也会烦，其实汉化的方法一路了然，就是直接替换文本，要么你用中文直接替换掉，做个硬编码汉化，像很久很久以前的 MJ 汉化版做的一样，要么用本地化标签来替换，就像这个 Mod 做的一样。
+
+很明显的，这个 Mod 的本地化不完整，因为这里有个`guiName = "Pitch Authority" `很明显就是硬编码文本。
+
+```C#
+// ... // 
+	[KSPField(guiActive = false, guiActiveUnfocused = true, guiFormat = "0", guiName = "Pitch Authority", guiUnits = "°", unfocusedRange = 25f)]
+	public float pitchAuthority = 1f;
+// ... // 
+```
+
+直接修改的方式太简单就不深究了，接下来探寻如何本地化，对于本地化，也很简单，直接将"Pitch Authority"替换为本地化标签即可，如我现在就将其替换为我自己在 en-us.cfg 中创建的本地化标签 `#SPE_Plugin_PitchAuthority`：
+
+```c#
+// ... //
+    [KSPField(guiActive = false, guiActiveUnfocused = true, guiFormat = "0", guiName = "#SPE_Plugin_PitchAuthority", guiUnits = "°", unfocusedRange = 25f)]
+    public float pitchAuthority = 1f;
+// ... //
+```
+
+这就完成了，但是为什么这样就行了呢？对于`guiName`这个变量，其实是`KSPField`中继承特性KSP的另一个特性`FieldAttribute`的一个属性，这个属性 `guiName` 有 get 和 set 两个访问器，通过使用 dnSpy 工具对引用文件进行反编译可以看到如下代码：
+
+```C#
+// ... //
+public string guiName
+{
+    get
+    {
+        return this._guiName;
+    }
+	set
+	{
+        this._guiName = Localizer.Format(value);
+	}
+}
+[SerializeField]
+private string _guiName;
+// ... // 
+```
+
+可以看到在 set 访问器中，该属性的赋值行为是赋 `Localizer.Format()`方法返回的值，也就是说，`guiName` 的本地化实现就是通过调用`KSP.Localization.Localizer.Format()` 这个方法而实现的，这个方法会返回对应本地化标签如 `#autoLOC_6013041` 的值，即等效为`guiName = Localizer.Format("#autoLOC_6013041");`
+
+
 
 
 
