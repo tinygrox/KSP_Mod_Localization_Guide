@@ -363,7 +363,7 @@ Localization
 
 直接复制一份刚才的本地化文件 **en-us.cfg**，更改文件名为 **zh-cn.cfg**，然后打开，将文件内的en-us节点名替换为zh-cn，然后保存，如图所示：
 
-![](./img/SPE_CN.PNG)
+![完成后](./img/SPE_CN.PNG)
 
 来到部件汉化流程的最后一步：翻译。
 
@@ -611,7 +611,7 @@ PART
 
 在游戏中可以看到这些都变成了中文，且 Kerbalism 的功能也是完全正常的。（描述是中文是因为我在别的地方也写了一个 patch）
 
-![](./img/KerbalismPatch.png)
+![编辑界面中 Kerbalism 相关](./img/KerbalismPatch.png)
 
 总之，要利用 MM patch 对 Mod 进行汉化首先需要你能够看懂 Mod 的 Patch 中的语法，然后才能根据 Mod 的实际情况进行具体问题具体分析。
 
