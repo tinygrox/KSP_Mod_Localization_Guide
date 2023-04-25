@@ -375,10 +375,9 @@ Localization
 
 对于MM Patch，回到之前提到的 Kerbalism 自带的配置文件夹中的 `GameData/KerbalismConfig/System/Habitat.cfg` 文件，对于 Patch 文件，该如何本地化呢？答案是原封不动的复制到本地化标签就可以了。以下是示例：
 
-在原 Patch 文件
+原 Patch 文件：
 
 ```
-// 原 Patch 文件
 @PART[mk1pod,mk1pod_v2]:NEEDS[FeatureHabitat]:AFTER[KerbalismDefault]
 {
 	@title ^= #KerbalismConfig_UNPRESSURIZED_title // :(.)$:$0 (UNPRESSURIZED) :
@@ -391,7 +390,7 @@ Localization
 }
 ```
 
-在本地化文件中
+在本地化文件中：
 
 - 英文翻译 en-us.cfg
 
@@ -468,6 +467,8 @@ Localization
 由于作者在其大量的 Patch 中使用了大量 `title` 字段来匹配 `MODULE [ Configure ]` 节点，所以任何 `name = Configure` 的 `MODULE` 节点下的字段 `title` 都不能被本地化，以及 SETUP 子节点下的字段 `name`(但是 `desc` 可以)。有兴趣的读者可以自行查看GameData\KerbalismConfig\Profiles\Default.cfg。
 
 但是这也不是没有办法改成中文，请看下节的【MM Patch 法】。
+
+明白了之后，那么现在这个 Mod 中
 
 ## 2. MM Patch 法
 
@@ -668,7 +669,7 @@ PART
 本章建议读者具备一定的计算机编程方面的能力，当然实在不懂也可以随便往下看看。
 万变不离其宗，一般都是统一采用游戏官方提供的多语言本地化接口，即`KSP.Localization.Localizer.Format()`或`KSP.Localization.Localizer.GetStringByTag()`方法，待会配合[这个链接](https://www.kerbalspaceprogram.com/ksp/api/class_k_s_p_1_1_localization_1_1_localizer.html)讲解。
 
-要对 DLL 内部的硬编码文本进行本地化/翻译/汉化操作，需要一个能够编译 C# 代码的工具，这个工具一般称为 IDE，在 IDE 的选择这方面你可以选择微软的 VS 或是 JetBrain 的 Rider都可以，本章节主要以 VS 2022 Community 为例。
+要对 DLL 内部的硬编码文本进行本地化/翻译/汉化操作，需要一个能够编译 C# 代码的工具，这个工具一般称为 IDE，在 IDE 的选择这方面你可以选择微软的 VS 或是 JetBrain 的 Rider 都可以，本章节主要以 VS 2022 Community 为例。
 
 ### 环境搭建
 
@@ -714,12 +715,7 @@ PART
 如果还没有打开 **Starship-Expansion-Project** 的工程文件，先用 VS 打开工程，然后啪的一下很快啊，在**Modules/ModuleSEPControlSurface.cs**下可以看到这些代码:
 
 ```C#
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TundraExploration.Utils;
-using UnityEngine;
-
+// ... //
 namespace StarshipExpansionProject
 {
     public class ModuleSEPControlSurface : ModuleLiftingSurface, IMultipleDragCube, ITorqueProvider
@@ -777,13 +773,29 @@ private string _guiName;
 
 可以看到在 set 访问器中，该属性的赋值行为是赋 `Localizer.Format()`方法返回的值，也就是说，`guiName` 的本地化实现就是通过调用`KSP.Localization.Localizer.Format()` 这个方法而实现的，这个方法会返回对应本地化标签如 `#autoLOC_6013041` 的值，即等效为`guiName = Localizer.Format("#autoLOC_6013041");`
 
-你一定开始想：“懂了，以后遇到文本就直接调用 `Localizer.Format()` 就完事了”。首先在做法上，这是没有一点问题，因为这就是本地化会用到的方法，但是使用太多会产生性能问题，所以对于那些静态文本，推荐使用 `Localizer.GetStringByTag()`，只有当文本中存在变量参数，我们才使用 `Localizer.Format()` 。那为何会产生性能问题呢？因为这个方法是直接读表，速度会比另一个快，另一个则是……反正不是读表，所以速度慢，如要展开说明，又要花费篇幅，所以先按下不表。
+你一定开始想：“懂了，以后遇到文本就直接调用 `Localizer.Format()` 就完事了”。首先在做法上，没有一点问题，因为这就是本地化会用到的方法，但是使用太多会产生性能问题，所以对于那些不带参数的静态文本，可以有两种方式来处理：
+
+1. 使用 `Localizer.GetStringByTag()`，这个方法是直接读表，速度会比另一个快，但是呢，`Localizer.GetStringByTag()`存在弊端，如果你在本地化的过程不小心遗失了任何一个本地化标签（比如在本地化文件中直接删除了某一行），导致其无法通过这个 tag 获取到本地化文本，那么此时你打开游戏控制台就会疯狂报红字，且整个 Mod 会直接崩溃，除此之外，对于转义字符（`\\n`、`\\t`、`\"`等）的支持也很有限，所以建议小心使用。
+2. 新声明一个`static string`变量来存储每个本地化标签的文本，然后再用这个变量来实现本地化。
+
+```c#
+using KSP.Localization;
+public class xxx
+{
+    public static string SOMELOC = Localizer.Format("#xxxxx_xxxx"); // 先声明一个静态变量存储文本
+    // ...
+    
+    GUILayout.Button(SOMELOC); // 然后用变量代替原来的文本
+}
+```
+
+
 
 继续顺着文件往下看，又发现了一个`[KSPAction(guiName="#autoLOC_6001337")]`，这个和上面的是一样的，实际上这个写法还可以更加精简 => `[KSPAction("#autoLOC_6001337")]`。
 
-这个文件接下来都是一堆的`[KSPAction(...)]`，请你自己试一试吧。
+这个文件接下来都是一堆的`[KSPAction(...)]`，请自己试一试吧。
 
-然后到了第二个文件`ModuleSEPEngineGUI.cs`，找到 `LabelGUIName` 变量，对于字符串类型 string 的变量，如果你不知道这个字符串会在代码的哪里用上，可以右键单击该变量名，然后查看所有引用，在出来的结果中可以找到引用的方式
+然后到了第二个文件`ModuleSEPEngineGUI.cs`，找到 `LabelGUIName` 变量，对于字符串类型 string 的变量，如果你不知道这个字符串会在代码的哪里用上，可以右键单击该变量名，然后查看所有引用，在出来的结果中可以看到在代码的其他地方如何引用该变量的，这个步骤很重要，
 
 ### GUILayout
 
@@ -793,9 +805,9 @@ private string _guiName;
 
 难蚌
 
-### ???
+### 句子存在变量
 
-我好烦呐
+当要翻译的整段文本中存在变量时，应该使用 `Localizer.Format()` 方法
 
 ### 其他
 
@@ -814,6 +826,12 @@ private string _guiName;
 ## 2.怎么翻译完了他喵的进去还是英文
 
 检查自己的翻译文件中`en-us`节点是否已经改成了`zh-cn`，如没有请修改完成后重启游戏。
+
+### 3. 咋汉化完了文本显示的是本地化标签而不是翻译后的文本
+
+检查代码中的 `Format("")` 或 `GetStingByTag("")` 是否存在空格，或对应的标签文本拼写正确。
+
+
 
 
 # 六、结语
@@ -838,11 +856,11 @@ private string _guiName;
 
 下面列出了在航空航天相关的语境中的部分“多义单词”的中文表达。
 
-|单词/缩略词  |释义 |Mod|
+|单词/缩略词  |释义 |出现|
 |-    |-    |-   |
 |grain |n. 药柱 | Better SRBs|
-|stage |n. 分级 | - |
-| throttle | n.节流阀 | - |
+|stage |n. 分级 | Squad |
+| throttle | n.节流阀 | Squad |
 | High-Bypass | n.高函道 | Near Future Aeronautics |
 | MLI | n.多层隔热材料 | RealFuels |
 | | | |
