@@ -737,8 +737,8 @@ namespace StarshipExpansionProject
 
 ```C#
 // ... // 
-	[KSPField(guiActive = false, guiActiveUnfocused = true, guiFormat = "0", guiName = "Pitch Authority", guiUnits = "°", unfocusedRange = 25f)]
-	public float pitchAuthority = 1f;
+[KSPField(guiActive = false, guiActiveUnfocused = true, guiFormat = "0", guiName = "Pitch Authority", guiUnits = "°", unfocusedRange = 25f)]
+public float pitchAuthority = 1f;
 // ... // 
 ```
 
@@ -746,8 +746,8 @@ namespace StarshipExpansionProject
 
 ```c#
 // ... //
-    [KSPField(guiActive = false, guiActiveUnfocused = true, guiFormat = "0", guiName = "#SPE_Plugin_PitchAuthority", guiUnits = "°", unfocusedRange = 25f)]
-    public float pitchAuthority = 1f;
+[KSPField(guiActive = false, guiActiveUnfocused = true, guiFormat = "0", guiName = "#SPE_Plugin_PitchAuthority", guiUnits = "°", unfocusedRange = 25f)]
+public float pitchAuthority = 1f;
 // ... //
 ```
 
@@ -773,41 +773,117 @@ private string _guiName;
 
 可以看到在 set 访问器中，该属性的赋值行为是赋 `Localizer.Format()`方法返回的值，也就是说，`guiName` 的本地化实现就是通过调用`KSP.Localization.Localizer.Format()` 这个方法而实现的，这个方法会返回对应本地化标签如 `#autoLOC_6013041` 的值，即等效为`guiName = Localizer.Format("#autoLOC_6013041");`
 
-你一定开始想：“懂了，以后遇到文本就直接调用 `Localizer.Format()` 就完事了”。首先在做法上，没有一点问题，因为这就是本地化会用到的方法，但是使用太多会产生性能问题，所以对于那些不带参数的静态文本，可以有两种方式来处理：
+继续顺着文件往下看，又发现了一个`[KSPAction(guiName="#autoLOC_6001337")]`，这个和上面的是一样的，实际上这个写法还可以更加精简 => `[KSPAction("#autoLOC_6001337")]`。
 
-1. 使用 `Localizer.GetStringByTag()`，这个方法是直接读表，速度会比另一个快，但是呢，`Localizer.GetStringByTag()`存在弊端，如果你在本地化的过程不小心遗失了任何一个本地化标签（比如在本地化文件中直接删除了某一行），导致其无法通过这个 tag 获取到本地化文本，那么此时你打开游戏控制台就会疯狂报红字，且整个 Mod 会直接崩溃，除此之外，对于转义字符（`\\n`、`\\t`、`\"`等）的支持也很有限，所以建议小心使用。
+这个文件接下来都是一堆的`[KSPAction(...)]`，请自己试一试吧。
+
+然后到了第二个文件`ModuleSEPEngineGUI.cs`，找到 `LabelGUIName` 变量，对于字符串类型 string 的变量，如果你不知道这个字符串会在代码的哪里用上，可以右键单击该变量名，然后查看所有引用，在出来的结果中可以看到在代码的其他地方如何引用该变量的，这个步骤很重要，可以让你理清该文本在代码中使用的逻辑。
+
+如何本地化变量呢？很简单的，直接调用 `Localizer.Format("")` 方法就行，如下
+
+```C#
+// ... //
+[KSPField]
+public string LabelGUIName = Localizer.Format("#SPE_EngineGUI_LabelGUIName");// "SEP Engine Selection";
+// ... // 
+```
+
+然后在你的`en-us.cfg`文件中添加
+
+```
+Localization
+{
+	en-us
+	{
+		...
+		#SPE_EngineGUI_LabelGUIName = SEP Engine Selection
+		...
+	}
+}
+```
+
+好了，变量的本地化就这么简单。
+
+如果文本是常量(const)怎么办呢？很简单，直接将文本替换成本地化标签，然后找到引用该常量标签的界面实现，在那个实现上继续调用我们的本地化方法：
+
+```c#
+// 假设现有一个常量
+public const string constText = "XXXXXXX";
+
+// 相关的界面文本调用
+GUILayout.Button(constText, xxxx);
+
+// 那么只需变更成这样
+public const string constText = "#LOC_XXXX";
+GUILayout.Button(Localizer.Format(constText), xxxx);
+```
+
+上述代码示例只是一种改法，实际上需要根据 Mod 的实际逻辑来决定。
+
+### Localizer.Format() & Localizer.GetStringByTag()
+
+你一定开始想：“懂了，以后遇到文本就直接调用 `Localizer.Format()` 就完事了”。首先在做法上，没有一点问题，因为这就是本地化会用到的方法，但是无脑使用会产生严重的性能问题（不信可以去本地化一下`Final Frontier`，在航天中心场景从 130 帧卡到个位数），所以对于那些不带参数的静态文本，可以有两种方式来处理：
+
+1. 使用 `Localizer.GetStringByTag()`，这个方法是直接读表，速度会比另一个快，但是呢，`Localizer.GetStringByTag()`存在弊端，如果你在本地化的过程不小心遗失了任何一个本地化标签（比如在本地化文件中直接删除了某一行），导致方法其无法通过这个 tag 获取到本地化文本，那么此时你打开游戏控制台就会疯狂报红字，且整个 Mod 会直接崩溃（游戏不崩），即鲁棒性不够强，除此之外，对于转义字符（`\\n`、`\\t`、`\"`等）的支持也很有限，所以建议小心使用（principia 的本地化实现就是调用了这个方法，只能说将这种不稳定的接口暴露给用户是一种非常胆大的行为）。
 2. 新声明一个`static string`变量来存储每个本地化标签的文本，然后再用这个变量来实现本地化。
 
 ```c#
 using KSP.Localization;
 public class xxx
 {
-    public static string SOMELOC = Localizer.Format("#xxxxx_xxxx"); // 先声明一个静态变量存储文本
+    // 先声明一个静态变量存储文本
+    public static string SOMELOC = Localizer.Format("#xxxxx_xxxx"); 
     // ...
     
-    GUILayout.Button(SOMELOC); // 然后用变量代替原来的文本
+    // 然后用变量代替原来的文本，而不是直接 GUILayout.Button(Localizer.Format("#xxxxx_xxxx"));
+    GUILayout.Button(SOMELOC); 
+    // ...
 }
 ```
 
+实际上到这里，本地化方法就已经基本教学完毕了，下面来点有挑战性的。
 
-
-继续顺着文件往下看，又发现了一个`[KSPAction(guiName="#autoLOC_6001337")]`，这个和上面的是一样的，实际上这个写法还可以更加精简 => `[KSPAction("#autoLOC_6001337")]`。
-
-这个文件接下来都是一堆的`[KSPAction(...)]`，请自己试一试吧。
-
-然后到了第二个文件`ModuleSEPEngineGUI.cs`，找到 `LabelGUIName` 变量，对于字符串类型 string 的变量，如果你不知道这个字符串会在代码的哪里用上，可以右键单击该变量名，然后查看所有引用，在出来的结果中可以看到在代码的其他地方如何引用该变量的，这个步骤很重要，
-
-### GUILayout
-
-这是 `UnityEngine` 里的一个类，主要用于绘制界面相关。
-
-### guiName/tooltip
-
-难蚌
-
-### 句子存在变量
+### 整个句子中存在可变变量
 
 当要翻译的整段文本中存在变量时，应该使用 `Localizer.Format()` 方法
+
+如这样的代码：
+
+```C#
+int a;
+string b = "I have " + a + " fuel tanks.";
+```
+
+你总不能将`I have`和`fuel tanks`拆分出来2个本地化标签吧
+
+所以要这样处理
+
+```c#
+int a;
+string b = Localizer.Format("#Loc_havefueltanks", a);
+```
+
+然后在本地化文件中添加
+
+```
+Localization
+{
+	en-us
+	{
+		#Loc_havefueltanks = I have <<1>> fuel tanks.
+	}
+}
+```
+
+如果存在多个变量，那调用的方法就插入多个参数，`Localizer.Format("", pa1, pa2, pa3, ...)`，本地化标签也有多个`<<x>>`，从 1 开始，依次类推。
+
+这个东西有个语法规则，叫什么 Lingoona，有兴趣的读者配合这个链接 https://lingoona.com/cgi-bin/grammar#l=en&oh=1&oc=1 自己摸索，这个内容不是很想讲。
+
+然后要提醒注意的一点是，这个`<<1>>`参数的位置可以随意变换，比如现有本地化文本
+
+`#EXAMPLELOC = `
+
+
 
 ### 其他
 
