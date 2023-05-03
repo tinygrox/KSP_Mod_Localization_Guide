@@ -333,11 +333,11 @@ README.md
 
 优点是快，遇啥改啥，有能力的还能写个自动化工具进行一键翻译。
 
-注意修改完成保存后右下角的编码应为`UTF-8`或`UTF-8 with BOM`，文件不是这个编码保存的，别过来问我怎么修改后中文是乱码。上图中为 UTF-8。
+注意翻译完成后保存时文件的编码应为 **UTF-8**，即在VS Code的下方显示为 UTF-8 文件不是这个编码保存的，**别过来问**我怎么修改后中文是乱码。
 
 ### 本地化
 
-按照顺序，容易的先来，先将部件的文本给本地化了，本地化起手定式：在 Mod 根目录下新建 Localization 文件夹、新建 **en-us.cfg** 文本文件，这一步你可以是通过手动创建的方式，也可以自己写个工具来实现。
+按照顺序，容易的先来，先将部件的文本给本地化了，本地化一般起手定式：在 Mod 根目录（不是工程根目录，在GameData文件下的那个）下新建 Localization 文件夹、新建 **en-us.cfg** 文本文件，这一步你可以是通过手动创建的方式，也可以自己写个工具来实现。
 
 打开空白的**en-us.cfg**文件，称本地化文件，下同，添加 `Localization {}` 节点，然后在节点内再添加一个`en-us{}` 节点，如下示例代码：
 
@@ -357,7 +357,7 @@ Localization
 
 ![这里应该要有一张图](./assets/SPE_LOC.png)
 
-图为本人使用自己编写的工具自动创建的结果。可在我的[GitHub链接](https://github.com/tinygrox/Starship-Expansion-Project/blob/Localization/GameData/StarshipExpansionProject/Localization/en-us.cfg)上查看完整的文件。
+图为本人使用自己编写的工具自动创建的结果。可在我的这个[GitHub链接](https://github.com/tinygrox/Starship-Expansion-Project/blob/Localization/GameData/StarshipExpansionProject/Localization/en-us.cfg)上查看完整的本地化结果。
 
 假设你现在已经改完所有的部件文件了，也手动生成了一个英文版本的本地化文件，接下来就是进行我们最后的中文翻译工作。
 
@@ -367,17 +367,18 @@ Localization
 
 来到部件汉化流程的最后一步：翻译。
 
-接下来的工作就非常简单了，直接翻译每个本地化标签后的英文原文为中文就好了，这里就不放图了。
+接下来的工作就非常简单了，直接翻译每个本地化标签后的英文原文为中文就好了，这里就不放图了，就是简简单单的翻译而已。唯一要注意的就是保存时编码一定要为`UTF-8`或者`UTF-8 with BOM`
 
-那么对于 **Starship Expansion Project** 这个 Mod 来说，部件的本地化工作已经完成。的确还有少量的英文文本出现在游戏中，但那不属于部件的范畴了，需要对DLL插件的代码进行修改才行了。
+那么对于 **Starship Expansion Project** 这个 Mod 来说，部件的本地化工作已经完成。的确还有少量的英文文本出现在游戏中，但那不属于部件的范畴了，需要对 DLL 插件的代码进行修改才行了。
 
 ## 对待 MM Patch
 
 对于MM Patch，回到之前提到的 Kerbalism 自带的配置文件夹中的 `GameData/KerbalismConfig/System/Habitat.cfg` 文件，对于 Patch 文件，该如何本地化呢？答案是原封不动的复制到本地化标签就可以了。以下是示例：
 
-原 Patch 文件：
+原 Patch 文件需要改动部分：
 
 ```
+// ... //
 @PART[mk1pod,mk1pod_v2]:NEEDS[FeatureHabitat]:AFTER[KerbalismDefault]
 {
 	@title ^= #KerbalismConfig_UNPRESSURIZED_title // :(.)$:$0 (UNPRESSURIZED) :
@@ -388,6 +389,7 @@ Localization
 		max_pressure = 0.3
 	}
 }
+// ... //
 ```
 
 在本地化文件中：
@@ -472,7 +474,7 @@ Localization
 
 ## 2. MM Patch 法
 
-该方法利用 Mod - Module Manager（下文用 MM 表示） 的功能来对 部件/Patch 的文本进行修改，该方法局限性较大，且需要掌握部分 Module Manager 的语法，需要一定量的学习成本，但是好处也是有的。
+该方法利用 Mod - Module Manager（下文用 MM 表示） 的功能来对 **部件/Patch** 的文本进行修改，所以局限性较大（不能汉化dll），且需要掌握部分 Module Manager 的语法，需要一定量的学习成本，但是好处也是有的。
 
 对于一个没有支持本地化的 Mod 来说，我们无论是直接对文本进行修改还是在进行本地化的过程中，都会涉及要改动源文件，考虑到有些作者更新频率较快，可能出现 1 天 1 小更，2 天 1 大更的这种情况，那么玩家在更新 Mod 的时候，此时会覆盖掉原来已经修改好的文件，导致之前做的本地化工作失效。那么此时可以通过编写一个或多个 MM Patch 通过 MM 来对那些部件中的文本在游戏中进行替换，在方式上很像 Rimworld 的那些独立汉化 Mod —— 汉化在不修改源 Mod 的情况下，对部件的文本进行替换操作。好处是对于部件类型的 Mod 来说，只要作者不修改部件的 name，那么不管以后怎么更新，游戏中都能显示为中文。
 
