@@ -355,7 +355,7 @@ Localization
 
 然后依次找到各个部件文件将其中的各个可本地化字段（title、description等）替换为刚才在本地化文件中创建的本地化标签。
 
-![这里应该要有一张图](./assets/SPE_LOC.png)
+![这里应该要有一张图](./img/SPE_LOC.png)
 
 图为本人使用自己编写的工具自动创建的结果。可在我的这个[GitHub链接](https://github.com/tinygrox/Starship-Expansion-Project/blob/Localization/GameData/StarshipExpansionProject/Localization/en-us.cfg)上查看完整的本地化结果。
 
