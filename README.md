@@ -685,7 +685,7 @@ PART
 // ... 
 ```
 
-这是本地化前的 patch 原文部分，这个 patch 的意思是在mk1pod,mk1pod_v2这个 2 个指令舱的 title 和 description 的末尾最后一个字符的后面(`(.)$`)分别添加相应的字符串。
+这是本地化前的 patch 原文部分，这个 patch 的意思是在 mk1pod,mk1pod_v2 这个 2 个指令舱的 title 和 description 的末尾最后一个字符的后面(`(.)$`)分别添加相应的字符串。其中`(.)$`代表正则匹配语句，`$0 (UNPRESSURIZED) `代表替换结果，整个使用`:`作为分隔符分割。分隔符可以自定义，第一个字符就是作为分隔符，如要换成其他分隔符，如`P`，则这样写`P(.)$P$0 (UNPRESSURIZED) P`，但是建议还是采用原来的`:`符号，以免混用产生混淆。
 
 如果要用 MM patch 方法来翻译这些字段需要怎么做呢？也是利用正则表达式：
 
@@ -698,6 +698,8 @@ PART
 ```
 
 在上述 patch 中，对所有的部件的 title 和 description 中分别匹配字符串 `UNPRESSURIZED` 和 `<color=orange>Unpressurized.</color> Bring your own space suit.`，如果匹配到，就将其替换为`未加压`和`<color=orange>未加压</color> 带上你的宇航服。`
+
+![reg](./img/reg.png)
 
 ## 3.DLL (plugin) 硬编码
 
