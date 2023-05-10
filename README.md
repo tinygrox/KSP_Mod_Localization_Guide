@@ -668,6 +668,37 @@ PART
 
 贴心提示：如果感觉看 Patch 看得头疼，可以在 GameData 目录下找到 **ModuleManager.ConfigCache** 文件用编辑器打开查看相关节点被 MM 应用 patch 后的结果。
 
+### 正则表达式
+
+接下来再来看 MM Patch 的一个功能，正则表达式替换。
+
+继续以 Kerbalism 的 patch 为例，在之前提到过这个 patch，就是采用了正则表达式功能：
+
+```
+// ... 
+@PART[mk1pod,mk1pod_v2]:NEEDS[FeatureHabitat]:AFTER[KerbalismDefault]
+{
+	@title ^= :(.)$:$0 (UNPRESSURIZED) :
+	@description ^= :(.)$:$0\n\n<color=orange>Unpressurized.</color> Bring your own space suit. :
+	... 
+}
+// ... 
+```
+
+这是本地化前的 patch 原文部分，这个 patch 的意思是在mk1pod,mk1pod_v2这个 2 个指令舱的 title 和 description 的末尾最后一个字符的后面(`(.)$`)分别添加相应的字符串。
+
+如果要用 MM patch 方法来翻译这些字段需要怎么做呢？也是利用正则表达式：
+
+```
+@PART[*]:NEEDS[Kerbalism]:AFTER[zzzKerbalismDefault]
+{
+    @title ^= :UNPRESSURIZED:未加压:
+    @description ^= :<color=orange>Unpressurized.</color> Bring your own space suit.:<color=orange>未加压</color> 带上你的宇航服。:
+}
+```
+
+在上述 patch 中，对所有的部件的 title 和 description 中分别匹配字符串 `UNPRESSURIZED` 和 `<color=orange>Unpressurized.</color> Bring your own space suit.`，如果匹配到，就将其替换为`未加压`和`<color=orange>未加压</color> 带上你的宇航服。`
+
 ## 3.DLL (plugin) 硬编码
 
 本章建议读者具备一定的计算机编程方面的能力，当然实在不懂也可以随便往下看看。
@@ -683,7 +714,7 @@ PART
 
 ### 开始
 
-接下来的流程将默认读者具有一定的 .NET C# 编程知识水平，大概需要学习到能够明白 C# 的类、类方法、继承、反射（Reflection）、特性（Attribute）等内容。
+接下来的流程将默认读者具有一定的 .NET C# 编程知识水平，以现在的经验来看，大概需要学习到能够明白 C# 的类、类方法、继承、反射（Reflection）、特性（Attribute）等内容。能看懂代码是关键，不要求所有的代码都能看懂，但是局部的代码怎么运行的，方法如何被调用，VS 的使用还是需要知道的。不过这些都能在实践中慢慢积累，所以请你别怕！我上手本地化 MJ 时才刚学 C# 不久呢。
 
 ### 载入 Mod 解决方案
 
