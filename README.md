@@ -955,6 +955,9 @@ Localization
 | throttle | n.节流阀 | Squad |
 | High-Bypass | n.高函道 | Near Future Aeronautics |
 | MLI | n.多层隔热材料 | RealFuels |
-| | | |
-| | | |
-| | | |
+| Clamp-O-Tron Docking Port | n.夹具装置对接口 | Squad 能沿用原版的翻译就尽量，下同 |
+| Inline Clamp-O-Tron | n.轴向夹具装置对接口 | Squad |
+| Clamp-O-Tron Docking Port Jr. | n.小型夹具装置对接口 | Squad |
+| Clamp-O-Tron Shielded Docking Port | n.带外壳夹具装置对接口 | Squad |
+| Clamp-O-Tron Docking Port Sr. | n.大型夹具装置对接口 | Squad |
+| Fuel crossfeed | n.燃料流通 | Squad |
