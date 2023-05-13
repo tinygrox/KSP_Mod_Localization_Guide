@@ -57,7 +57,7 @@
 
 这里主要是对 KSP 中的 `.cfg` 配置文件的内容结构进行简单的解释，这是为了后续能够读懂我说的字段在哪个地方。
 
-这里以原版游戏目录中的 GameData/Squad/Parts/Command/mk1poad_v2/mk1Pod_v2.cfg 的部件（Mk1 指令舱）文件进行解释。
+这里以原版游戏目录中的 GameData/Squad/Parts/Command/mk1pod_v2/mk1Pod_v2.cfg 的部件（Mk1 指令舱）文件进行解释。
 
 如果用 VS Code 打开文件会是这样的（如果你没有安装插件是不会有语法高亮功能的）
 
@@ -292,6 +292,19 @@ Localization
 #  四、开始行动
 
 下面介绍本地化中常用的一般流程和常规方法。
+
+一般而言，我会把坎巴拉的 Mod 分为 3 种类型：
+
+- 部件类 Mod：内容上只为游戏添加了新的部件或是对现存部件的扩展。
+- 插件类 Mod：涉及到玩法、功能的扩展。
+- 综合类 Mod：以上两种内容都有涉及，既添加了部件又扩充了玩法。
+
+区分：
+
+- 部件类 Mod 内容**不**存在 .dll 文件，整个 mod 只有 .cfg 配置文件和其他相关文件，如 **MOIST! Underwater Technologies**、**HabTech2** 等这些就是纯粹的部件类 Mod
+
+- 插件类 Mod 内容**只**存在 dll 文件，一般是作为游戏性扩展、代码接口标准规范等存在。类似 **Module Manger**、**B9 Part Switch**等
+- 综合类 Mod 内容两种内容都存在。
 
 ## 0.基本方法
 
