@@ -460,9 +460,7 @@ Localization
 }
 ```
 
-该部分代码会为所有的、存在字段 **CrewCapacity** 且值 > 0 的、没有 `name = KerbalSeat` 的 `MODULE` 的**所有**部件添加了一个 `name = Cofigure`、`title = Pod`的、还有多个子节点的 `MODULE` 节点。
-
-然后再往下找到：
+该部分代码会为所有的、存在字段 **CrewCapacity** 且值 > 0 的、没有 `name = KerbalSeat` 的 `MODULE` 的**所有**部件添加了一个 `name = Cofigure`、`title = Pod`的、还有多个子节点的 `MODULE` 节点。是不是看到存在有一个`title = Pod`和`name = Scrubber`，然后你就以为这些词条可以进行本地化？别高兴的太早，我们继续再往下翻阅文件，结果找到：
 
 ```
 @PART[*]:HAS[@MODULE[Configure]]:NEEDS[ProfileDefault]:FOR[zzzKerbalismDefault]
@@ -479,13 +477,11 @@ Localization
 }
 ```
 
-可以看到该部分会对所有的、存在 `name = Configure` 的 `MODULE` 节点的 `PART` 节点中、带有 `title = Pod` 的  `MODULE[Configure]` 节点进行修改。如果你对之前的部分中的 `title` 进行了本地化操作，那么其他的剩下的这些语句将不会生效，此时你已经将整个 patch 的逻辑给弄坏了，进入游戏后也会发现 Kerbalism 的一堆功能都将不会正常运行。
+可以看到该部分会对所有的、存在 `name = Configure` 的 `MODULE` 节点的 `PART` 节点中、带有 `title = Pod` 的  `MODULE[Configure]` 节点进行修改，即该Patch 会根据上面 Configure MODULE 节点内的 title 的值来进行条件判断。如果你对之前的部分中的 `title` 进行了本地化操作，那么其他的剩下的这些语句将不会生效，此时你已经将整个 Patch 的逻辑给弄坏了，进入游戏后也会发现 Kerbalism 的一堆功能都将不会正常运行。
 
 由于作者在其大量的 Patch 中使用了大量 `title` 字段来匹配 `MODULE [ Configure ]` 节点，所以任何 `name = Configure` 的 `MODULE` 节点下的字段 `title` 都不能被本地化，以及 SETUP 子节点下的字段 `name`(但是 `desc` 可以)。有兴趣的读者可以自行查看GameData\KerbalismConfig\Profiles\Default.cfg。
 
 但是这也不是没有办法改成中文，请看下节的【MM Patch 法】。
-
-明白了之后，那么现在这个 Mod 中
 
 ## 2. MM Patch 法
 
@@ -516,9 +512,9 @@ Localization
 - `@title = Donnager MK-1乘员模块 `  ---- 将这个节点的 `title` 字段的值从原来的`Donnager MK-1 Crew Module`变为`Donnager MK-1乘员模块`
 - `@description = 当Jeb看到那巨大的 Donnager 级航天器时，他问……` ----- 同`@title`用法。
 
-那么启动游戏后，MM 会读取这个 Patch 文件，然后将 name 为 SEP_22_SHIP_CREW 的 PART 节点中的字段 title 和description 改成我们 patch 中的值。
+那么启动游戏后，MM 会读取这个 Patch 文件，然后将 `name` 为 `SEP_22_SHIP_CREW` 的 PART 节点中的字段 title 和description 改成我们 patch 中的值。
 
-如果文件中还有其他子节点中包含了其他可本地化的字段，如上述例子中，下面还有几个地方未汉化完全
+如果文件中还有其他子节点中包含了其他可本地化的字段，也同样可以这么实现，如上述例子中，下面还有几个地方未汉化完全
 
 ```
 PART
@@ -547,7 +543,7 @@ PART
 }
 ```
 
-那么 Patch 需要继续进一步的完善：
+那么 Patch 只需继续进一步的完善：
 
 ```
 @PART[SEP_22_SHIP_CREW]
@@ -671,7 +667,7 @@ PART
 
 示例代码没有考虑本地化，但我想聪明的你已经知道如果要本地化需要怎么做了。
 
-接着解释这个 patch 的作用，首先在第一行我使用了一个 `:FINAL` 修饰符，代表这个 patch 将会在最后应用，即这个Patch 将会在 MM 应用完毕所有 Kerbalism 自己的 patch 后，才会最后被应用到游戏中。
+接着解释这个 patch 的作用，首先在第一行我使用了一个 `:FINAL` 修饰符，代表这个 patch 将会在最后应用，即这个Patch 将会在 MM 应用完毕其他所有的 Patch 之后(包括 Kerbalism)，才会最后被应用到游戏中，这个修饰符是确保本地化正常的核心。
 
 在游戏中可以看到这些都变成了中文，且 Kerbalism 的功能也是完全正常的。（描述是中文是因为我在别的地方也写了一个 patch）
 
@@ -679,7 +675,7 @@ PART
 
 总之，要利用 MM patch 对 Mod 进行汉化首先需要你能够看懂 Mod 的 Patch 中的语法，然后才能根据 Mod 的实际情况进行具体问题具体分析。
 
-贴心提示：如果感觉看 Patch 看得头疼，可以在 GameData 目录下找到 **ModuleManager.ConfigCache** 文件用编辑器打开查看相关节点被 MM 应用 patch 后的结果。
+贴心提示：如果感觉看 Patch 看得头疼，可以在 GameData 目录下找到 **ModuleManager.ConfigCache** 文件用编辑器打开查看相关节点被 MM 应用 patch 后的结果，同样也建议使用 VS Code 打开，善用搜索功能。
 
 ### 正则表达式
 
@@ -1002,7 +998,7 @@ Localization
 
 操作完成后即可实现对比功能。
 
-当然，这个差异对比也不是万能的，如果2个文件的内容存在太大差异，比如另一个存在很多空行或者标签的顺序纯粹是乱来的，那么就会导致差异对比功能大打折扣，所以建议在生成中文翻译文件的时候，直接复制原英文文件，改名
+当然，这个差异对比也不是万能的，如果2个文件的内容存在太大差异，比如另一个存在很多空行或者标签的顺序纯粹是乱来的，那么就会导致差异对比功能大打折扣，所以建议在生成中文翻译文件的时候，直接复制原英文文件，在原来的基础上进行翻译工作。
 
 ### 航天词汇笔记
 
