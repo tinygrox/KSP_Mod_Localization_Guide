@@ -70,7 +70,7 @@ PART
 {
     name = mk1pod_v2
     module = Part
-	author = RoverDude
+    author = RoverDude
     ...
 }
 ```
@@ -120,58 +120,58 @@ INTERNAL
 ```
 PART
 {
-	...
-	title = #autoLOC_500319
-	manufacturer = #autoLOC_501630
-	description = #autoLOC_500320
-	...
-	tags = #autoLOC_500321
-	MODULE
-	{
-		...
-		defaultControlPointDisplayName = #autoLOC_6011003
-		CONTROLPOINT
-		{
-			displayName = #autoLOC_6011004
-			...
-		}
-	}
-	MODULE
-	{
-		...
-		toggleName = #autoLOC_502011
-		eventOnName = #autoLOC_502012
-		eventOffName = #autoLOC_502013
-	}
-	MODULE
-	{
-		...
-		experimentActionName = #autoLOC_502009
-		resetActionName = #autoLOC_502010
-		reviewActionName = #autoLOC_502200
-		...
-	}
-	MODULE
-	{
-		...
-		reviewActionName = #autoLOC_502201
-		storeActionName = #autoLOC_502202
-		...
-	}
-	MODULE
-	{
-		...
-		baseDisplayName = #autoLOC_8007117
-		VARIANT
-		{
-			displayName = #autoLOC_8007119
-		}
-		VARIANT
-		{
-			displayName = #autoLOC_8003112
-			...
-		}
-	}
+    ...
+    title = #autoLOC_500319
+    manufacturer = #autoLOC_501630
+    description = #autoLOC_500320
+    ...
+    tags = #autoLOC_500321
+    MODULE
+    {
+        ...
+        defaultControlPointDisplayName = #autoLOC_6011003
+        CONTROLPOINT
+        {
+            displayName = #autoLOC_6011004
+            ...
+        }
+    }
+    MODULE
+    {
+        ...
+        toggleName = #autoLOC_502011
+        eventOnName = #autoLOC_502012
+        eventOffName = #autoLOC_502013
+    }
+    MODULE
+    {
+        ...
+        experimentActionName = #autoLOC_502009
+        resetActionName = #autoLOC_502010
+        reviewActionName = #autoLOC_502200
+        ...
+    }
+    MODULE
+    {
+        ...
+        reviewActionName = #autoLOC_502201
+        storeActionName = #autoLOC_502202
+        ...
+    }
+    MODULE
+    {
+        ...
+        baseDisplayName = #autoLOC_8007117
+        VARIANT
+        {
+            displayName = #autoLOC_8007119
+        }
+        VARIANT
+        {
+            displayName = #autoLOC_8003112
+            ...
+        }
+    }
 }
 ```
 
@@ -184,23 +184,23 @@ PART
 ```
 Localization
 {
-	zh-cn
-	{
-		...
-		#autoLOC_18451 = 引擎功率<<1>>%
-		#autoLOC_18491 = 进行EVA实验
-		#autoLOC_18516 = 燃料用量<<1>>%
-		...
-		#autoLOC_500319 = Mk1指令舱
-		#autoLOC_500320 = 本来是用于在一支展示用模拟火箭顶端临时占位置的部件。全世界的火箭科学家们都声称Mk1指令舱远比前代机型更为安全可靠。现在经常能看到其执行任务。
-		#autoLOC_500321 = 太空舱 方位 控制 ?eva 飞行 陀螺 ?舱内 动量 飞行员 反应 火箭 太空 稳定 转向 扭矩
-		...
-		#autoLOC_501630 = 坎灵顿模型火箭和纸制品有限公司
-		...
-		#autoLOC_6011003 = 默认
-		...
-		// 自己打开文件看看喽 //
-	}
+    zh-cn
+    {
+        ...
+        #autoLOC_18451 = 引擎功率<<1>>%
+        #autoLOC_18491 = 进行EVA实验
+        #autoLOC_18516 = 燃料用量<<1>>%
+        ...
+        #autoLOC_500319 = Mk1指令舱
+        #autoLOC_500320 = 本来是用于在一支展示用模拟火箭顶端临时占位置的部件。全世界的火箭科学家们都声称Mk1指令舱远比前代机型更为安全可靠。现在经常能看到其执行任务。
+        #autoLOC_500321 = 太空舱 方位 控制 ?eva 飞行 陀螺 ?舱内 动量 飞行员 反应 火箭 太空 稳定 转向 扭矩
+        ...
+        #autoLOC_501630 = 坎灵顿模型火箭和纸制品有限公司
+        ...
+        #autoLOC_6011003 = 默认
+        ...
+        // 自己打开文件看看喽 //
+    }
 }
 ```
 
@@ -217,13 +217,13 @@ Localization
 ```
 @PART[mk1pod,mk1pod_v2]:NEEDS[FeatureHabitat]:AFTER[KerbalismDefault]
 {
-	@title ^= :(.)$:$0 (UNPRESSURIZED) :
-	@description ^= :(.)$:$0\n\n<color=orange>Unpressurized.</color> Bring your own space suit. :
+    @title ^= :(.)$:$0 (UNPRESSURIZED) :
+    @description ^= :(.)$:$0\n\n<color=orange>Unpressurized.</color> Bring your own space suit. :
 
-	@MODULE[Habitat]
-	{
-		max_pressure = 0.3
-	}
+    @MODULE[Habitat]
+    {
+        max_pressure = 0.3
+    }
 }
 ```
 
@@ -359,12 +359,12 @@ README.md
 ```
 Localization
 {
-	en-us
-	{
-		...这里就是未来要加上的本地化标签
-		#autoLoc_XXXX = XXXX // 这里的命名规则可以任意，我习惯上使用 【# + Mod名称缩写 + 下划线 + 部件名 + 下划线 + 当前字段名】如下行所示
-		#SPE_22_SHIP_CREW_title = Donnager MK-1 Crew Moudle
-	}
+    en-us
+    {
+        ...这里就是未来要加上的本地化标签
+        #autoLoc_XXXX = XXXX // 这里的命名规则可以任意，我习惯上使用 【# + Mod名称缩写 + 下划线 + 部件名 + 下划线 + 当前字段名】如下行所示
+        #SPE_22_SHIP_CREW_title = Donnager MK-1 Crew Moudle
+    }
 }
 ```
 
@@ -396,13 +396,13 @@ Localization
 // ... //
 @PART[mk1pod,mk1pod_v2]:NEEDS[FeatureHabitat]:AFTER[KerbalismDefault]
 {
-	@title ^= #KerbalismConfig_UNPRESSURIZED_title // :(.)$:$0 (UNPRESSURIZED) :
-	@description ^= #KerbalismConfig_UNPRESSURIZED_desc // :(.)$:$0\n\n<color=orange>Unpressurized.</color> Bring your own space suit. :
+    @title ^= #KerbalismConfig_UNPRESSURIZED_title // :(.)$:$0 (UNPRESSURIZED) :
+    @description ^= #KerbalismConfig_UNPRESSURIZED_desc // :(.)$:$0\n\n<color=orange>Unpressurized.</color> Bring your own space suit. :
 
-	@MODULE[Habitat]
-	{
-		max_pressure = 0.3
-	}
+    @MODULE[Habitat]
+    {
+        max_pressure = 0.3
+    }
 }
 // ... //
 ```
@@ -414,11 +414,11 @@ Localization
 ```
 Localization
 {
-	en-us
-	{
-		#KerbalismConfig_UNPRESSURIZED_title = :(.)$:$0 (UNPRESSURIZED) :
-		#KerbalismConfig_UNPRESSURIZED_desc = :(.)$:$0\n\n<color=orange>Unpressurized.</color> Bring your own space suit. :
-	}
+    en-us
+    {
+        #KerbalismConfig_UNPRESSURIZED_title = :(.)$:$0 (UNPRESSURIZED) :
+        #KerbalismConfig_UNPRESSURIZED_desc = :(.)$:$0\n\n<color=orange>Unpressurized.</color> Bring your own space suit. :
+    }
 }
 ```
 
@@ -427,11 +427,11 @@ Localization
 ```
 Localization
 {
-	zh-cn
-	{
-		#KerbalismConfig_UNPRESSURIZED_title = :(.)$:$0 (未加压) :
-		#KerbalismConfig_UNPRESSURIZED_desc = :(.)$:$0\n\n<color=orange>未加压。</color> 带上你的太空服。 :
-	}
+    zh-cn
+    {
+        #KerbalismConfig_UNPRESSURIZED_title = :(.)$:$0 (未加压) :
+        #KerbalismConfig_UNPRESSURIZED_desc = :(.)$:$0\n\n<color=orange>未加压。</color> 带上你的太空服。 :
+    }
 }
 ```
 
@@ -528,20 +528,20 @@ PART
     MODULE
     {
         name = ModuleAnimateGeneric
-		animationName = Hatch_Transform
-		actionGUIName = Toggle Docking Hatch
-		startEventGUIName = Close Docking Hatch
-		endEventGUIName = Open Docking Hatch
-		layer = 1
+        animationName = Hatch_Transform
+        actionGUIName = Toggle Docking Hatch
+        startEventGUIName = Close Docking Hatch
+        endEventGUIName = Open Docking Hatch
+        layer = 1
     }
     MODULE
     {
-		name = ModuleAnimateGeneric
-		animationName = SS_Airlock_Door_Transform
-		actionGUIName = Toggle Airlock
-		startEventGUIName = Close Airlock
-		endEventGUIName = Open Airlock
-		layer = 0
+        name = ModuleAnimateGeneric
+        animationName = SS_Airlock_Door_Transform
+        actionGUIName = Toggle Airlock
+        startEventGUIName = Close Airlock
+        endEventGUIName = Open Airlock
+        layer = 0
      }
     ...
 }
@@ -557,14 +557,14 @@ PART
     @MODULE:HAS[#animationName[Hatch_Transform]]
     {
         @actionGUIName = 开关对接舱门
-		@startEventGUIName = 关闭对接舱门
-		@endEventGUIName = 开启对接舱门
+        @startEventGUIName = 关闭对接舱门
+        @endEventGUIName = 开启对接舱门
     }
     @MODULE:HAS[#animationName[SS_Airlock_Door_Transform]]
     {
-		@actionGUIName = 开关气闸舱
-		@startEventGUIName = 关闭气闸舱
-		@endEventGUIName = 打开气闸舱
+        @actionGUIName = 开关气闸舱
+        @startEventGUIName = 关闭气闸舱
+        @endEventGUIName = 打开气闸舱
      }
 }
 ```
@@ -581,14 +581,14 @@ PART
     @MODULE:HAS[#animationName[Hatch_Transform]]
     {
         @actionGUIName = #SPE_22_SHIP_CREW_hatch_toggle
-		@startEventGUIName = #SPE_22_SHIP_CREW_hatch_close
-		@endEventGUIName = #SPE_22_SHIP_CREW_hatch_open
+        @startEventGUIName = #SPE_22_SHIP_CREW_hatch_close
+        @endEventGUIName = #SPE_22_SHIP_CREW_hatch_open
     }
     @MODULE:HAS[#animationName[SS_Airlock_Door_Transform]]
     {
-		@actionGUIName = #SPE_22_SHIP_CREW_airlock_toggle
-		@startEventGUIName = #SPE_22_SHIP_CREW_airlock_close
-		@endEventGUIName = #SPE_22_SHIP_CREW_airlock_open
+        @actionGUIName = #SPE_22_SHIP_CREW_airlock_toggle
+        @startEventGUIName = #SPE_22_SHIP_CREW_airlock_close
+        @endEventGUIName = #SPE_22_SHIP_CREW_airlock_open
      }
 }
 ```
@@ -691,9 +691,9 @@ PART
 // ... 
 @PART[mk1pod,mk1pod_v2]:NEEDS[FeatureHabitat]:AFTER[KerbalismDefault]
 {
-	@title ^= :(.)$:$0 (UNPRESSURIZED) :
-	@description ^= :(.)$:$0\n\n<color=orange>Unpressurized.</color> Bring your own space suit. :
-	... 
+    @title ^= :(.)$:$0 (UNPRESSURIZED) :
+    @description ^= :(.)$:$0\n\n<color=orange>Unpressurized.</color> Bring your own space suit. :
+    ... 
 }
 // ... 
 ```
@@ -811,10 +811,10 @@ public string guiName
     {
         return this._guiName;
     }
-	set
-	{
+    set
+    {
         this._guiName = Localizer.Format(value);
-	}
+    }
 }
 [SerializeField]
 private string _guiName;
@@ -843,12 +843,12 @@ public string LabelGUIName = Localizer.Format("#SPE_EngineGUI_LabelGUIName");// 
 ```
 Localization
 {
-	en-us
-	{
-		...
-		#SPE_EngineGUI_LabelGUIName = SEP Engine Selection
-		...
-	}
+    en-us
+    {
+        ...
+        #SPE_EngineGUI_LabelGUIName = SEP Engine Selection
+        ...
+    }
 }
 ```
 
@@ -916,16 +916,16 @@ string b = Localizer.Format("#Loc_havefueltanks", a);
 ```
 Localization
 {
-	en-us
-	{
-		#Loc_havefueltanks = I have <<1>> fuel tanks. // 此时这个 <<1>> 在游戏就会自动替换为代码中 a 的值
-	}
-	
-	// 中文翻译内容，虽然可以写在一个文件内，但是建议不同语言的本地化还是单独分成一个个文件，方便后续添加语言支持和维护，这里只是作为示例
-	zh-cn
-	{
-		#Loc_havefueltanks = 我有 <<1>> 个燃料箱。 // 这是你的翻译
-	}
+    en-us
+    {
+        #Loc_havefueltanks = I have <<1>> fuel tanks. // 此时这个 <<1>> 在游戏就会自动替换为代码中 a 的值
+    }
+    
+    // 中文翻译内容，虽然可以写在一个文件内，但是建议不同语言的本地化还是单独分成一个个文件，方便后续添加语言支持和维护，这里只是作为示例
+    zh-cn
+    {
+        #Loc_havefueltanks = 我有 <<1>> 个燃料箱。 // 这是你的翻译
+    }
 }
 ```
 
