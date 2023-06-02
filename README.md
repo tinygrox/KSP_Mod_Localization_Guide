@@ -971,12 +971,95 @@ Localization
 
 检查代码中的 `Format("")` 或 `GetStingByTag("")` 是否存在不必要的空格，或对应的标签文本拼写正确。
 
+- **星球 Mod 生态群落怎么翻译**
+
+星球 Mod 皆存在有一个依赖 Mod - **Kopernicus Planetary System Modifier**，对于星球名、星球描述、生态群落的本地化/翻译需进行如下操作：
+
+```
+Kopernicus
+{
+    Body
+    {
+        Properties
+        {
+            displayName = 星球显示名称，如果 mod 没有给出该字段请手动添加
+            Biomes
+            {
+                Biome
+                {
+                    displayName = 生态群落显示名称，如果 Mod 没有给出该字段请手动添加
+                }
+             }
+        }
+    }
+}
+```
+
+可参考我为 Parallax 提交的 PR https://github.com/Gameslinx/Tessellation/pull/104 中的更改。
+
 
 # 六、结语
 
 有啥好说的呢，实践实践再实践。
 
 ## 附录
+
+### CFG 配置文件可本地化字段一览
+
+| 节点(Node)            | 字段(Field)                                                  |
+| --------------------- | ------------------------------------------------------------ |
+| AGENT                 | "title",  "description"                                      |
+| B9_TANK_TYPE          | "title"                                                      |
+| Biome                 | "displayName"                                                |
+| COMET_ORBIT_TYPE      | "displayName",  "description"                                |
+| Conclusion            | ...                                                          |
+| CONTROLPOINT          | "displayName"                                                |
+| CREW_REQUEST          | "Keyword"                                                    |
+| EFFECT                | "effectDescription"                                          |
+| EVASITUATION          | "resultString"                                               |
+| EXPERIENCE_TRAIT      | "title",  "desc"                                             |
+| EXPERIMENT_DEFINITION | "title"                                                      |
+| FIREWORKFX_DEFINITION | "displayName",  "color1Name", "color2Name", "color3Name"     |
+| Introduction          | ...                                                          |
+| MESH                  | displayName                                                  |
+| MISSIONPACK           | "displayName"                                                |
+| MODULE                | "stagingEnableText",  "stagingDisableText", "MeshMenuName",  "NodeMenuName", "menuName"，"startEventGUIName",  "endEventGUIName",  "actionGUIName","defaultControlPointDisplayName",  "baseDisplayName","experimentActionName",  "resetActionName", "reviewActionName",  "storeActionName",  "collectActionName","reviewActionName",  "storeActionName","toggleName", "eventOnName",  "eventOffName","extendpanelsActionName","extendActionName",  "retractActionName","primaryEngineModeDisplayName",  "secondaryEngineModeDisplayName","ConverterName",  "StartActionName", "StopActionName",  "ToggleActionName","resourceOutputName","moduleType","deployActionName","displayseatName","TooltipTitle","TooltipPrimaryField","switcherDescription","switcherDescriptionPlural", |
+| PARAM                 | "Description"                                                |
+| PART                  | "title",  "description", "manufacturer", "tags"              |
+| PART_REQUEST          | "PartDescription",  "VesselDescription", "Keyword"           |
+| Problem               | ...                                                          |
+| Properties            | "displayName",  "description"                                |
+| RESOURCE_DEFINITION   | "displayName",  "abbreviation"                               |
+| RESULTS               | ...                                                          |
+| STRATEGY              | "title",  "desc"                                             |
+| STRATEGY_DEPARTMENT   | "title",  "desc", "headName"                                 |
+| SUBTYPE               | "title",  "descriptionDetail", "descriptionSummary"          |
+| SURVEY_DEFINITION     | "DataName",  "AnomalyName", "ResultName"                     |
+| VARIANT               | "displayName",  "description"                                |
+| VARIANTTHEME          | "displayName",  "description"                                |
+
+如何使用？
+
+```
+// 这是一个胡乱写的没有任何意义的 CFG 配置文件
+PART <----- 节点 PART
+{
+    title = 一个部件名称 <---- 字段 "title" 属于节点 PART，在上述列表中，可本地化
+    
+    MODULE <----- 节点 MODULE
+    {
+        stagingEnableText = 一段描述 <----- 字段 "stagingEnableText" 属于 MODULE，在上述列表中，可本地化
+        Keyword = xxxx <---- 字段 "Keyword" 属于 MODULE，不在上述列表中，除非 Mod 存在说明，否则不建议本地化
+        
+        PART_REQUEST <----- 节点 PART_REQUEST
+        {
+            Keyword = xxxx <---- 字段 "Keyword" 属于 PART_REQUEST，在上述列表中，可本地化
+        }
+    }
+}
+```
+
+
 
 ### VS Code 使用技巧之文件对比
 
@@ -1000,13 +1083,15 @@ Localization
 
 当然，这个差异对比也不是万能的，如果2个文件的内容存在太大差异，比如另一个存在很多空行或者标签的顺序纯粹是乱来的，那么就会导致差异对比功能大打折扣，所以建议在生成中文翻译文件的时候，直接复制原英文文件，在原来的基础上进行翻译工作。
 
-### 航天词汇笔记
+### 翻译术语词汇笔记
 
 因为英语这门语言的特殊性，英语中单词普遍，嗯，怎么形容好呢？先用【一词多义】简单概括吧，所以很多时候看翻译出来的文本时会感觉非常怪异，每个单词都懂啥意思，连在一起就看不懂了。
 
 在不同的语境中，同一个单词翻译成中文后会有多种含义，有些单词的各个含义之间好像风马牛不相及，当然，这个特性是从翻译后的现代中文上来说的，在英语原文中则会是一种很正常的表达（所以说翻译真的很重要），英文单词更多是侧重于表示一个抽象出来的概念，而现在使用的中文的词语更多是侧重于形象的表达。
 
-下面列出了在航空航天相关的语境中的部分“多义单词”的中文表达。
+下面列出了在游戏
+
+中的部分“多义单词”的中文表达。
 
 |单词/缩略词  |释义 |出现|
 |-    |-    |-   |
@@ -1021,3 +1106,104 @@ Localization
 | Clamp-O-Tron Shielded Docking Port | n.带外壳夹具装置对接口 | Squad |
 | Clamp-O-Tron Docking Port Sr. | n.大型夹具装置对接口 | Squad |
 | Fuel crossfeed | n.燃料流通 | Squad |
+
+### 生态群落翻译
+
+以下摘自原版(1.12.5)游戏中，如果 Mod 涉及到生态群落名称，比如一些星球包，请优先参考沿用原版翻译：
+
+| 生态群落原文（按首字母顺序排列） | 原版翻译       |
+| -------------------------------- | :------------- |
+| Akatsuki Lake                    | 晓之湖         |
+| Babbage Patch                    | 巴贝奇斑       |
+| Badlands                         | 荒野           |
+| Canyon                           | 峡谷           |
+| Canyons                          | 大峡谷         |
+| Central Lowlands                 | 中央低地       |
+| Central Mountain Range           | 中央山脉       |
+| Crater Bay                       | 陨坑湾         |
+| Crater Island                    | 陨坑岛         |
+| Crater Lake                      | 陨坑湖         |
+| Craters                          | 环形山         |
+| Crescent Bay                     | 新月湾         |
+| Degrasse Sea                     | 德格拉斯海     |
+| Deserts                          | 沙漠           |
+| Dunes                            | 沙丘           |
+| East Crater                      | 东方环形山     |
+| East Farside Crater              | 远东环形山     |
+| Eastern Canyon                   | 东方峡谷       |
+| Eastern Mountain Ridge           | 东方山脉       |
+| Eastern Sea                      | 东海           |
+| Explodium Sea                    | 硝苷之海       |
+| Farside Basin                    | 远方盆地       |
+| Farside Crater                   | 远方撞击坑     |
+| Flats                            | 平原           |
+| Flying High                      | 高空飞行       |
+| Flying Low                       | 低空飞行       |
+| Foothills                        | 山麓           |
+| Fragipan                         | 脆磐层         |
+| Gagarin Crater                   | 加加林环形山   |
+| Galileio Crater                  | 伽利略环形山   |
+| Grasslands                       | 草原           |
+| Great Flats                      | 大平原         |
+| Greater Flats                    | 超大平原       |
+| Grissom Crater                   | 格里索姆环形山 |
+| Highland Craters                 | 高原环形山     |
+| Highlands                        | 高原           |
+| Ice Canyons                      | 冰冻峡谷       |
+| Ice Caps                         | 冰冠           |
+| Impact Craters                   | 撞击坑洞区     |
+| Impact Ejecta                    | 撞击喷出物     |
+| In Space High                    | 远地太空       |
+| In Space Low                     | 近地太空       |
+| Lesser Flats                     | 小平原         |
+| Lowlands                         | 低地           |
+| Mara                             | 荒野           |
+| Midland Canyon                   | 内陆峡谷       |
+| Midland Craters                  | 内陆环形山     |
+| Midland Sea                      | 内陆海         |
+| Midlands                         | 内陆           |
+| Minor Craters                    | 小环形山       |
+| Mountains                        | 山脉           |
+| Mu Glacier                       | 姆冰川         |
+| North Pole                       | 北极           |
+| Northeast Basin                  | 东北盆地       |
+| Northern Glaciers                | 北方冰川       |
+| Northern Ice Shelf               | 北方冰架       |
+| Northern Shelf                   | 北方浅滩       |
+| Northern Sinkhole                | 北方天坑       |
+| Northern Sinkhole Ridge          | 北方天坑山脊   |
+| Northwest Basin                  | 西北盆地       |
+| Northwest Crater                 | 西北环形山     |
+| Olympus                          | 奥林匹斯山     |
+| Peaks                            | 山顶           |
+| Polar Crater                     | 极地环形山     |
+| Polar Craters                    | 极地环形山群   |
+| Polar Highlands                  | 极地高原       |
+| Polar Lowlands                   | 极地低地       |
+| Poles                            | 极地           |
+| Ridges                           | 山脊           |
+| Shallows                         | 浅滩           |
+| Shores                           | 海岸           |
+| Slopes                           | 山坡           |
+| South Eastern Lowlands           | 东南低地       |
+| South Eastern Mountain Range     | 东南山脉       |
+| South Pole                       | 南极           |
+| South Western Lowlands           | 西南低地       |
+| Southern Basin                   | 南方盆地       |
+| Southern Glaciers                | 南方冰川       |
+| Southern Ice Shelf               | 南方冰架       |
+| Southern Valleys                 | 南方峡谷       |
+| Southwest Crater                 | 西南环形山     |
+| Surface Landed                   | 着陆           |
+| Surface Splashed                 | 溅落           |
+| The Sagen Sea                    | 萨根海         |
+| Tundra                           | 冻原           |
+| Twin Craters                     | 双子撞击坑     |
+| Tycho Crater                     | 第谷撞击坑     |
+| Valley                           | 山谷           |
+| Water                            | 水边           |
+| Western Canyon                   | 西方峡谷       |
+| Western Lowlands                 | 西方低地       |
+| Western Mountain Ridge           | 西方山脉       |
+| Western Sea                      | 西海           |
+
