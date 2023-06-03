@@ -1098,7 +1098,7 @@ PART <----- 节点 PART
 |grain |n. 药柱 | Better SRBs|
 |stage |n. 分级 | Squad |
 | throttle | n.节流阀 | Squad |
-| High-Bypass | n.高函道 | Near Future Aeronautics |
+| High-Bypass | n.高涵道 | Near Future Aeronautics |
 | MLI | n.多层隔热材料 | RealFuels |
 | Clamp-O-Tron Docking Port | n.夹具装置对接口 | Squad 能沿用原版的翻译就尽量，下同 |
 | Inline Clamp-O-Tron | n.轴向夹具装置对接口 | Squad |
