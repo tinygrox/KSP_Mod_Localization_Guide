@@ -1090,7 +1090,7 @@ namespace MyHarmonyPatch
 }
 ```
 
-然后开始写我们的 Patch，先把那个碍眼的小提示**"Collapse Main Window"**给汉化了，新建一个类，然后：
+然后开始写我们的 Patch，先把那个碍眼的小提示 **"Collapse Main Window"** 给汉化了，新建一个类，然后：
 
 ```C#
 // Patcher1
@@ -1127,7 +1127,7 @@ namespace MyHarmonyPatch.Patcher
 
 编译后将产生的 DLL 文件放入游戏根目录下的 **GameData** 目录里，注意你必须已安装了Harmony2在游戏中，汉化效果如图显示：
 
-**"Enabled"** 是怎么变成启用的上述代码中没有涉及到，后面再写，关键词：Transpiler 和 IL。
+**"Enabled"** 是怎么变成 **启用** 的上述代码中没有涉及到，后面再写，关键词：Transpiler 和 IL。
 
 ![](./img/Harmony_TCA2.png)
 
