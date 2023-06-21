@@ -953,6 +953,190 @@ Localization
 
 而像在`Debug.xxx()`中的文本都是用于输出调试信息的，所以不建议对这些方法内的文本进行本地化，我在刚开始对 MJ 本地化的时候曾经就干过这件事，把其中的调试信息也给本地化了，现在都还没改回来。
 
+## 4. 超级进阶 - Harmony Patch
+
+注：为了能够适应海量的 Mod 代码，该方法的运用需要拥有较为扎实的 .NET 编程功底，包括但不限于了解**JIT编译**、**反射**和**内联**等概念。
+
+Harmony 是一个 .NET 的库，先贴个[介绍链接](https://harmony.pardeike.net/articles/intro.html)在此，该库能够在游戏运行时，不更改源代码的情况下对源代码中的方法进行修改，这一点与 MM 的功能是差不多的，只不过 MM 是针对 cfg 配置文件，而 Harmony 是针对 .NET C# 源代码的方法。
+
+要充分利用 Harmony 的强大功能，建议配合 **dnSpy** 或 **ILSpy** 等 .NET 反编译软件使用。
+
+一般而言，Harmony 的用途主要为对 Unity 游戏中的功能进行修改，即为游戏做 Mod 而使用，运用 Harmony 做 Mod 最广泛的游戏 Rimworld 算是其中之一，所以 Harmony 的教程在 Rimworld 社区极其丰富。
+
+既然能够修改代码，那自然而然的，也能够用来对 Mod 进行汉化，并且以这种方法进行的灵活性非常高，一通百通。
+
+### Harmony 的使用/安装
+
+首先通过 VS 或 Rider 新建一个工程，应该不用再废篇幅了吧？然后去此处 https://github.com/KSPModdingLibs/HarmonyKSP 下载由 [gotmachine](https://github.com/KSPModdingLibs/HarmonyKSP/commits?author=gotmachine) 弄出来的适配 KSP1 的 Harmony2，下载后放入你的工程文件夹，或者你也可以随便放在哪个位置，反正工程要有 **0Harmony.dll** 这个引用，能够 `using HarmonyLib` 即可。
+
+新建一个类，这是固定起手式：
+
+```C#
+using HarmonyLib;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using UnityEngine;
+
+namespace MyHarmonyPatch
+{
+    // 固定起手式
+    [KSPAddon(KSPAddon.Startup.xxx, 只生成一次实例?)]
+    public class HarmonyPatcher: MonoBehaviour
+    {
+        internal void Start()
+        {
+            var harmony = new Harmony("MyHarmonyPatch.Patcher");
+            harmony.PatchAll(Assembly.GetExecutingAssembly()); // 自动补丁模式，Harmony 会自动查找并应用工程内所有的 Patch，相当于自动注册 Patch
+        }
+    }
+}
+```
+
+### 具体问题具体分析
+
+下面以汉化 Mod - **Throttle Controlled Avionics** 为例，以下简称 TCA。注：并非完全汉化该 Mod，仅作为教程展示部分汉化操作。
+
+既然是要汉化 Mod，那么显然要汉化的 Mod 即为我们的依赖前置，直接一股脑的引用就完事，简单说就是 Mod 引用啥我引用啥，如下图：
+
+![TCA 引用](./img/Harmony_0.png)
+
+在使用 Harmony 进行 Patch 之前，首先熟悉一下 TCA 的代码，经本人花费1个小时熟悉了一轮之后，发现在这个 Mod 的文本是真的很多！于是从简单入手，那就先把飞行场景的某些界面文本给处理一下，先放个飞行场景的 TCA 界面截图：
+
+![TCA翻译前](./img/Harmony_TCA1.png)
+
+然后看 TCA 的代码 `GUI/TCAGui.cs` (节选)：
+
+`````C#
+// TCAGui.cs
+namespace ThrottleControlledAvionics
+{
+    [KSPAddon(KSPAddon.Startup.Flight, false)]
+    public class TCAGui : AddonWindowBase<TCAGui>
+    {
+        // ...
+        #region ControlTabs
+        [TabInfo("Navigation", 1, Icon = "ThrottleControlledAvionics/Icons/NavigationTab.png")]
+        public NavigationTab NAV;
+        [TabInfo("Orbital Autopilots", 2, Icon = "ThrottleControlledAvionics/Icons/OrbitalTab.png")]
+        public OrbitalTab ORB;
+        [TabInfo("Engines Control", 3, Icon = "ThrottleControlledAvionics/Icons/EnginesTab.png")]
+        public EnginesTab ENG;
+        [TabInfo("Advanced Settings", 4, Icon = "ThrottleControlledAvionics/Icons/AdvancedTab.png")]
+        public AdvancedTab ADV;
+        [TabInfo("Macros", 5, Icon = "ThrottleControlledAvionics/Icons/MacrosTab.png")]
+        public MacrosTab MCR;
+        // ...
+        #endregion
+        static GUIContent collapse_button = new GUIContent("▲", "Collapse Main Window");
+        static GUIContent uncollapse_button = new GUIContent("▼", "Restore Main Window");
+        static GUIContent prev_vessel_button = new GUIContent("◀", "Switch to previous vessel");
+        static GUIContent next_vessel_button = new GUIContent("▶", "Switch to next vessel");
+        static GUIContent active_vessel_button = new GUIContent("◇", "Back to active vessel");
+        static GUIContent switch_vessel_button = new GUIContent("◆", "Switch to current vessel");
+        static GUIContent help_button = new GUIContent("?", "TCA Manual");
+        // ...
+        void DrawMainWindow(int windowID)
+        {
+            // ... 
+            if(TCA.IsControllable)
+            {
+                GUILayout.BeginVertical();
+                GUILayout.BeginHorizontal();
+                // ...
+                if(GUILayout.Button("Enabled", enabled_style, GUILayout.Width(70)))
+                    TCA.ToggleTCA();
+            }
+            else
+            {
+                //...
+               GUILayout.Label("Vessel is Uncontrollable", Styles.label, GUILayout.ExpandWidth(true), GUILayout.ExpandHeight(true));
+            }
+        }
+        // ...
+    }
+}
+`````
+
+可以看到，这个类在开头有个特性`[KSPAddon(KSPAddon.Startup.Flight, false)]`，说明这个类只在进入到飞行场景时才会生成实例，那么我们的起手式代码也跟着一样：
+
+```C#
+// HarmonyPatcher.cs
+using HarmonyLib;
+using MyHarmonyPatch.Patcher;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using ThrottleControlledAvionics;
+using UnityEngine;
+
+namespace MyHarmonyPatch
+{
+    [KSPAddon(KSPAddon.Startup.Flight, true)]
+    public class HarmonyPatcher: MonoBehaviour
+    {
+        internal void Start()
+        {
+            var harmony = new Harmony("MyHarmonyPatch.Patcher");
+            harmony.PatchAll();
+        }
+    }
+}
+```
+
+然后开始写我们的 Patch，先把那个碍眼的小提示**"Collapse Main Window"**给汉化了，新建一个类，然后：
+
+```C#
+// Patcher1
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Threading.Tasks;
+using HarmonyLib;
+using ThrottleControlledAvionics;
+using UnityEngine;
+
+namespace MyHarmonyPatch.Patcher
+{
+    [HarmonyPatch(typeof(TCAGui), "DrawMainWindow", new[] { typeof(int)} )]
+    class Patcher1
+    {
+        [HarmonyPostfix]
+        static void TranslationPatch(ref TCAGui __instance)
+        {
+            ((GUIContent)__instance.GetType().GetField("collapse_button", AccessTools.all).GetValue(__instance)).tooltip = "折叠主窗口";
+            ((GUIContent)__instance.GetType().GetField("uncollapse_button", AccessTools.all).GetValue(__instance)).tooltip = "展开主窗口";
+            ((GUIContent)__instance.GetType().GetField("prev_vessel_button", AccessTools.all).GetValue(__instance)).tooltip = "切换到上一载具";
+            ((GUIContent)__instance.GetType().GetField("next_vessel_button", AccessTools.all).GetValue(__instance)).tooltip = "切换到下一载具";
+            ((GUIContent)__instance.GetType().GetField("active_vessel_button", AccessTools.all).GetValue(__instance)).tooltip = "切回到有效载具";
+            ((GUIContent)__instance.GetType().GetField("switch_vessel_button", AccessTools.all).GetValue(__instance)).tooltip = "切换到当前载具";
+            ((GUIContent)__instance.GetType().GetField("help_button", AccessTools.all).GetValue(__instance)).tooltip = "TCA手册";
+        }
+    }
+}
+```
+
+编译后将产生的 DLL 文件放入游戏根目录下的 **GameData** 目录里，注意你必须已安装了Harmony2在游戏中，汉化效果如图显示：
+
+**"Enabled"** 是怎么变成启用的上述代码中没有涉及到，后面再写，关键词：Transpiler 和 IL。
+
+![](./img/Harmony_TCA2.png)
+
+下面开始讲解代码：
+
+
+
+
+
 # 五、问题
 
 列出一些可能会遇到的问题
