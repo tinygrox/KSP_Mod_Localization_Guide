@@ -75,7 +75,7 @@ PART
 }
 ```
 
-可以看到是这样的一个结构。首先，这个 `PART { }` 在 KSP 中会被视为一个 `Node`，意为节点，下面提到的 Node 都是用来表示节点这个东西（这不是在中文社区闲着没事给你放洋屁，考虑到目前 KSP 的整体中文社区环境相对于其他游戏来说，对萌新没有那么的友善，所以这是为了方便后续的萌新在学会查阅英文资料后能够知道 Node 代表的是什么东西，不会产生那么多的分隔感），Node 的一般形式是
+可以看到是这样的一个结构。首先，这个 `PART { }` 在 KSP 中会被视为一个 `Node`，意为结点，下面提到的 Node 都是用来表示结点这个东西（这不是在中文社区闲着没事给你放洋屁，考虑到目前 KSP 的整体中文社区环境相对于其他游戏来说，对萌新没有那么的友善，所以这是为了方便后续的萌新在学会查阅英文资料后能够知道 Node 代表的是什么东西，不会产生那么多的分隔感），Node 的一般形式是
 
 ```
 Node
@@ -177,7 +177,7 @@ PART
 
 可以看到我摘出来的这些`字段（Field）`等于号后面的`值（Value）`都有一个共同的地方，那就是这些值都是以`#autoLOC_`开头的，这些值实际上相当于一个【变量】，可能用 C 语言的【宏定义】（`#define`）概念来解释更加准确。
 
-习惯于称这个东西为`Tag`，完整的叫`Localization Tag`，翻译过来叫“本地化标签”。在游戏加载的过程中，会读取目录下的所有`.cfg`文件，当读取到上面的这类文件时，如果遇到`xxx = #xxxxx`的地方，所有的这些 **字段**(比如 `title`) 的 **值**(比如`#autoLOC_500319`) 都会被替换为：已读取到的、内容包含 `Localization {}` 节点内的、当前游戏语言的、字段名称与之相同的 值 的内容。这些值已经在其他文件中的`Localization { }`节点中定义完成，像原版中，你可以在`GameData\Squad\Localization\dictionary.cfg`文件中找到各种`#autoLOC_xxx`的字段。
+习惯于称这个东西为`Tag`，完整的叫`Localization Tag`，翻译过来叫“本地化标签”。在游戏加载的过程中，会读取目录下的所有`.cfg`文件，当读取到上面的这类文件时，如果遇到`xxx = #xxxxx`的地方，所有的这些 **字段**(比如 `title`) 的 **值**(比如`#autoLOC_500319`) 都会被替换为：已读取到的、内容包含 `Localization {}` 结点内的、当前游戏语言的、字段名称与之相同的 值 的内容。这些值已经在其他文件中的`Localization { }`结点中定义完成，像原版中，你可以在`GameData\Squad\Localization\dictionary.cfg`文件中找到各种`#autoLOC_xxx`的字段。
 
 里面的`<<1>>`是啥我会在 DLL 插件的汉化方法里说明，其实是指代写在 DLL 里的变量，现在只是让你大概认识一下本地化字段和值的样子。
 
@@ -208,7 +208,7 @@ Localization
 
 ## 2. 认识 MM Patch
 
-这个内容属于大多数 mod 的前置依赖 mod - Module Manager 的内容，为了方便下面用 MM 来指代它。MM 提供了一系列操作 KSP 配置文件（CFG）的方法，方便那些 Mod 制作者可以在不修改原文件的情况下对原版或是其他 mod 的内容进行修改——你只需要写个 "patch"（补丁） 就可以轻松做到。这个 patch 能够对原版的 CFG 配置文件中的节点进行一系列操作（取决于你要实现什么），但需要遵循由 MM 定义的语法规则（好在不是很难）。应用场景有如你对原版某个引擎的性能感到不满意，想要自己“修复”一下。
+这个内容属于大多数 mod 的前置依赖 mod - Module Manager 的内容，为了方便下面用 MM 来指代它。MM 提供了一系列操作 KSP 配置文件（CFG）的方法，方便那些 Mod 制作者可以在不修改原文件的情况下对原版或是其他 mod 的内容进行修改——你只需要写个 "patch"（补丁） 就可以轻松做到。这个 patch 能够对原版的 CFG 配置文件中的结点进行一系列操作（取决于你要实现什么），但需要遵循由 MM 定义的语法规则（好在不是很难）。应用场景有如你对原版某个引擎的性能感到不满意，想要自己“修复”一下。
 
 因为相当部分的 mod 在制作过程中使用到了 MM 来对部件的名称等字段进行了添加、修改操作，所以关于 MM 的语法我认为是有必要学习的，能够帮助翻译工作的正常展开。
 
@@ -227,10 +227,10 @@ Localization
 }
 ```
 
-节点前的`@`属于 MM 语法规则中的编辑修改操作，对了，这整个文件就是称为一个 patch 文件，忘了说了。
+结点前的`@`属于 MM 语法规则中的编辑修改操作，对了，这整个文件就是称为一个 patch 文件，忘了说了。
 
-先不说后面的 NEEDS 和 AFTER 是啥，第一行的意思是让 MM 找到 name 为 mk1pod 和 mk1pod_v2 （我们亲爱的 Mk1 指令舱）的 PART 节点
-然后`@title`意为修改节点中的`title`字段，`^=`操作符代表使用正则表达式进行值的【操作】，第一个字符`:`将会被识别为分隔符，实际上可以用其他字符代替，但最好保持用冒号，除非你的语句中需要冒号，分隔符用来分隔正则匹配字段和值，接下来的`(.)$`则是正则表达式的语法内容，其中`$`意为匹配字符的末尾，`(.)`意为匹配任意字符，换行符除外。扯远了，这一行修改的内容是：在 title 后面添加`\n\n<color=orange>Unpressurized.</color> Bring your own space suit.`字段，`<color=orange></color>`这种类似于网页中的标签写法在 KSP 中是可以识别的，实际上属于 Unity 中的富文本（rich-text）内容，所以后续的翻译工作中遇到类似于这种文本形式，就不要翻译，保持原样，千万不要整个翻译为`<颜色=橙色>未加压。</颜色> 带上你的太空服。`，你只需这样`<color=orange>未加压。</color> 带上你的太空服。`就可以了。
+先不说后面的 NEEDS 和 AFTER 是啥，第一行的意思是让 MM 找到 name 为 mk1pod 和 mk1pod_v2 （我们亲爱的 Mk1 指令舱）的 PART 结点
+然后`@title`意为修改结点中的`title`字段，`^=`操作符代表使用正则表达式进行值的【操作】，第一个字符`:`将会被识别为分隔符，实际上可以用其他字符代替，但最好保持用冒号，除非你的语句中需要冒号，分隔符用来分隔正则匹配字段和值，接下来的`(.)$`则是正则表达式的语法内容，其中`$`意为匹配字符的末尾，`(.)`意为匹配任意字符，换行符除外。扯远了，这一行修改的内容是：在 title 后面添加`\n\n<color=orange>Unpressurized.</color> Bring your own space suit.`字段，`<color=orange></color>`这种类似于网页中的标签写法在 KSP 中是可以识别的，实际上属于 Unity 中的富文本（rich-text）内容，所以后续的翻译工作中遇到类似于这种文本形式，就不要翻译，保持原样，千万不要整个翻译为`<颜色=橙色>未加压。</颜色> 带上你的太空服。`，你只需这样`<color=orange>未加压。</color> 带上你的太空服。`就可以了。
 
 `@description`的功能和上述一样。
 
@@ -354,7 +354,7 @@ README.md
 
 按照顺序，容易的先来，先将部件的文本给本地化了，本地化一般起手定式：在 Mod 根目录（不是工程根目录，在GameData文件下的那个）下新建 Localization 文件夹、新建 **en-us.cfg** 文本文件，这一步你可以是通过手动创建的方式，也可以自己写个工具来实现。
 
-打开空白的**en-us.cfg**文件，称本地化文件，下同，添加 `Localization {}` 节点，然后在节点内再添加一个`en-us{}` 节点，如下示例代码：
+打开空白的**en-us.cfg**文件，称本地化文件，下同，添加 `Localization {}` 结点，然后在结点内再添加一个`en-us{}` 结点，如下示例代码：
 
 ```
 Localization
@@ -376,7 +376,7 @@ Localization
 
 假设你现在已经改完所有的部件文件了，也手动生成了一个英文版本的本地化文件，接下来就是进行我们最后的中文翻译工作。
 
-直接复制一份刚才的本地化文件 **en-us.cfg**，更改文件名为 **zh-cn.cfg**，然后打开，将文件内的en-us节点名替换为zh-cn，然后保存，如图所示：
+直接复制一份刚才的本地化文件 **en-us.cfg**，更改文件名为 **zh-cn.cfg**，然后打开，将文件内的en-us结点名替换为zh-cn，然后保存，如图所示：
 
 ![完成后](./img/SPE_CN.png)
 
@@ -460,7 +460,7 @@ Localization
 }
 ```
 
-该部分代码会为所有的、存在字段 **CrewCapacity** 且值 > 0 的、没有 `name = KerbalSeat` 的 `MODULE` 的**所有**部件添加了一个 `name = Cofigure`、`title = Pod`的、还有多个子节点的 `MODULE` 节点。是不是看到存在有一个`title = Pod`和`name = Scrubber`，然后你就以为这些词条可以进行本地化？别高兴的太早，我们继续再往下翻阅文件，结果找到：
+该部分代码会为所有的、存在字段 **CrewCapacity** 且值 > 0 的、没有 `name = KerbalSeat` 的 `MODULE` 的**所有**部件添加了一个 `name = Cofigure`、`title = Pod`的、还有多个子结点的 `MODULE` 结点。是不是看到存在有一个`title = Pod`和`name = Scrubber`，然后你就以为这些词条可以进行本地化？别高兴的太早，我们继续再往下翻阅文件，结果找到：
 
 ```
 @PART[*]:HAS[@MODULE[Configure]]:NEEDS[ProfileDefault]:FOR[zzzKerbalismDefault]
@@ -477,9 +477,9 @@ Localization
 }
 ```
 
-可以看到该部分会对所有的、存在 `name = Configure` 的 `MODULE` 节点的 `PART` 节点中、带有 `title = Pod` 的  `MODULE[Configure]` 节点进行修改，即该Patch 会根据上面 Configure MODULE 节点内的 title 的值来进行条件判断。如果你对之前的部分中的 `title` 进行了本地化操作，那么其他的剩下的这些语句将不会生效，此时你已经将整个 Patch 的逻辑给弄坏了，进入游戏后也会发现 Kerbalism 的一堆功能都将不会正常运行。
+可以看到该部分会对所有的、存在 `name = Configure` 的 `MODULE` 结点的 `PART` 结点中、带有 `title = Pod` 的  `MODULE[Configure]` 结点进行修改，即该Patch 会根据上面 Configure MODULE 结点内的 title 的值来进行条件判断。如果你对之前的部分中的 `title` 进行了本地化操作，那么其他的剩下的这些语句将不会生效，此时你已经将整个 Patch 的逻辑给弄坏了，进入游戏后也会发现 Kerbalism 的一堆功能都将不会正常运行。
 
-由于作者在其大量的 Patch 中使用了大量 `title` 字段来匹配 `MODULE [ Configure ]` 节点，所以任何 `name = Configure` 的 `MODULE` 节点下的字段 `title` 都不能被本地化，以及 SETUP 子节点下的字段 `name`(但是 `desc` 可以)。有兴趣的读者可以自行查看GameData\KerbalismConfig\Profiles\Default.cfg。
+由于作者在其大量的 Patch 中使用了大量 `title` 字段来匹配 `MODULE [ Configure ]` 结点，所以任何 `name = Configure` 的 `MODULE` 结点下的字段 `title` 都不能被本地化，以及 SETUP 子结点下的字段 `name`(但是 `desc` 可以)。有兴趣的读者可以自行查看GameData\KerbalismConfig\Profiles\Default.cfg。
 
 但是这也不是没有办法改成中文，请看下节的【MM Patch 法】。
 
@@ -508,13 +508,13 @@ Localization
 
 首先解释一下这个 Patch：
 
-- `@PART[SEP_22_SHIP_CREW]`  ----- 定位节点，MM 会定位到 `name` 为 `SEP_22_SHIP_CREW` 的 PART `Node`，即刚才文件中的那个 PART 节点，`@`代表要对这个节点进行`编辑/修改`操作
-- `@title = Donnager MK-1乘员模块 `  ---- 将这个节点的 `title` 字段的值从原来的`Donnager MK-1 Crew Module`变为`Donnager MK-1乘员模块`
+- `@PART[SEP_22_SHIP_CREW]`  ----- 定位结点，MM 会定位到 `name` 为 `SEP_22_SHIP_CREW` 的 PART `Node`，即刚才文件中的那个 PART 结点，`@`代表要对这个结点进行`编辑/修改`操作
+- `@title = Donnager MK-1乘员模块 `  ---- 将这个结点的 `title` 字段的值从原来的`Donnager MK-1 Crew Module`变为`Donnager MK-1乘员模块`
 - `@description = 当Jeb看到那巨大的 Donnager 级航天器时，他问……` ----- 同`@title`用法。
 
-那么启动游戏后，MM 会读取这个 Patch 文件，然后将 `name` 为 `SEP_22_SHIP_CREW` 的 PART 节点中的字段 title 和description 改成我们 patch 中的值。
+那么启动游戏后，MM 会读取这个 Patch 文件，然后将 `name` 为 `SEP_22_SHIP_CREW` 的 PART 结点中的字段 title 和description 改成我们 patch 中的值。
 
-如果文件中还有其他子节点中包含了其他可本地化的字段，也同样可以这么实现，如上述例子中，下面还有几个地方未汉化完全
+如果文件中还有其他子结点中包含了其他可本地化的字段，也同样可以这么实现，如上述例子中，下面还有几个地方未汉化完全
 
 ```
 PART
@@ -565,7 +565,7 @@ PART
 }
 ```
 
-可以看到我在定位 2 个 MODULE 子节点的时候使用了一个`:HAS[]`语法段，该语法段是让 MM 查找**有**字段`animationName`且值为`Hatch_Transform`或`SS_Airlock_Door_Transform` 的MODULE，因为这两个 MODULE 节点的 name 字段的值都是一样的，都是 `ModuleAnimateGeneric`，所以不能够采用像 `PART` 那样的定位节点方式，否则达不到我们的期望。在这个 patch 中，我通过匹配字段 `animationName` 来查找，因为这两个字段的值对于这个 PART 节点来说是独一无二的，所以能够确保 MM 能够匹配到正确的 MOUDLE 节点，然后修改相应的字段。
+可以看到我在定位 2 个 MODULE 子结点的时候使用了一个`:HAS[]`语法段，该语法段是让 MM 查找**有**字段`animationName`且值为`Hatch_Transform`或`SS_Airlock_Door_Transform` 的MODULE，因为这两个 MODULE 结点的 name 字段的值都是一样的，都是 `ModuleAnimateGeneric`，所以不能够采用像 `PART` 那样的定位结点方式，否则达不到我们的期望。在这个 patch 中，我通过匹配字段 `animationName` 来查找，因为这两个字段的值对于这个 PART 结点来说是独一无二的，所以能够确保 MM 能够匹配到正确的 MOUDLE 结点，然后修改相应的字段。
 
 当然，这个方法也同样能够适用于本地化，即
 
@@ -593,11 +593,11 @@ PART
 
 当然MM还能做到更多，不过这就需要读者自己去官方 Wiki + 自己的亲手实验来尝试了，偷偷告诉你，我的 MM fork 里有不完整翻译的 wiki。
 
-这里有个小提示：不要想着利用 MM Patch 来对 Localization 节点进行修改，比如你想要这样`@Localization { @zh-cn{  @#LOC_XXXX = XXXX } }`，你会发现进入游戏后没有啥用，虽然用 ALT + F12 打开调试菜单-数据库-重新载入本地化文本，然后切换一下场景（比如进入追踪站场景然后切回到航天中心）对于一些mod 可能有效果，但我还是建议不要这么干，很浪费时间。
+这里有个小提示：不要想着利用 MM Patch 来对 Localization 结点进行修改，比如你想要这样`@Localization { @zh-cn{  @#LOC_XXXX = XXXX } }`，你会发现进入游戏后没有啥用，虽然用 ALT + F12 打开调试菜单-数据库-重新载入本地化文本，然后切换一下场景（比如进入追踪站场景然后切回到航天中心）对于一些mod 可能有效果，但我还是建议不要这么干，很浪费时间。
 
 ### Kerbalism 的 Configure
 
-接下来回到之前提到的 Kerbalism 配置文件，因为这种 Mod 比较特殊，所以单独拿出来讲一下，在 Kerbalism 中，有大量的文本不属于硬编码，这些文本写入在KerbalismConfig 里，这些在 MODULE[Configure] 节点下的 title 和SETUP 子节点下的 name 字段实际上都是可以本地化的，但是不能通过直接修改和寻常本地化的方式，而是只能采用 MM Patch：
+接下来回到之前提到的 Kerbalism 配置文件，因为这种 Mod 比较特殊，所以单独拿出来讲一下，在 Kerbalism 中，有大量的文本不属于硬编码，这些文本写入在KerbalismConfig 里，这些在 MODULE[Configure] 结点下的 title 和SETUP 子结点下的 name 字段实际上都是可以本地化的，但是不能通过直接修改和寻常本地化的方式，而是只能采用 MM Patch：
 
 ```
 @PART[*]:HAS[@MODULE[Configure]]:FINAL
@@ -675,7 +675,7 @@ PART
 
 总之，要利用 MM patch 对 Mod 进行汉化首先需要你能够看懂 Mod 的 Patch 中的语法，然后才能根据 Mod 的实际情况进行具体问题具体分析。
 
-贴心提示：如果感觉看 Patch 看得头疼，可以在 GameData 目录下找到 **ModuleManager.ConfigCache** 文件用编辑器打开查看相关节点被 MM 应用 patch 后的结果，同样也建议使用 VS Code 打开，善用搜索功能。
+贴心提示：如果感觉看 Patch 看得头疼，可以在 GameData 目录下找到 **ModuleManager.ConfigCache** 文件用编辑器打开查看相关结点被 MM 应用 patch 后的结果，同样也建议使用 VS Code 打开，善用搜索功能。
 
 ### 正则表达式
 
@@ -1149,7 +1149,7 @@ namespace MyHarmonyPatch.Patcher
 
 - **怎么翻译完了他喵的进去还是英文**
 
-检查自己的翻译文件中`en-us`节点是否已经改成了`zh-cn`，如没有请修改完成后重启游戏。
+检查自己的翻译文件中`en-us`结点是否已经改成了`zh-cn`，如没有请修改完成后重启游戏。
 
 - **咋汉化完了文本显示的是本地化标签而不是翻译后的文本**
 
@@ -1190,7 +1190,7 @@ Kopernicus
 
 ### CFG 配置文件可本地化字段一览
 
-| 节点(Node)            | 字段(Field)                                                  |
+| 结点(Node)            | 字段(Field)                                                  |
 | --------------------- | ------------------------------------------------------------ |
 | AGENT                 | "title",  "description"                                      |
 | B9_TANK_TYPE          | "title"                                                      |
@@ -1226,16 +1226,16 @@ Kopernicus
 
 ```
 // 这是一个胡乱写的没有任何意义的 CFG 配置文件
-PART <----- 节点 PART
+PART <----- 结点 PART
 {
-    title = 一个部件名称 <---- 字段 "title" 属于节点 PART，在上述列表中，可本地化
+    title = 一个部件名称 <---- 字段 "title" 属于结点 PART，在上述列表中，可本地化
     
-    MODULE <----- 节点 MODULE
+    MODULE <----- 结点 MODULE
     {
         stagingEnableText = 一段描述 <----- 字段 "stagingEnableText" 属于 MODULE，在上述列表中，可本地化
         Keyword = xxxx <---- 字段 "Keyword" 属于 MODULE，不在上述列表中，除非 Mod 存在说明，否则不建议本地化
         
-        PART_REQUEST <----- 节点 PART_REQUEST
+        PART_REQUEST <----- 结点 PART_REQUEST
         {
             Keyword = xxxx <---- 字段 "Keyword" 属于 PART_REQUEST，在上述列表中，可本地化
         }
