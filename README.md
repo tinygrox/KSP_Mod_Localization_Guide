@@ -1290,6 +1290,9 @@ PART <----- 节点 PART
 | Clamp-O-Tron Shielded Docking Port | n.带外壳夹具装置对接口 | Squad |
 | Clamp-O-Tron Docking Port Sr. | n.大型夹具装置对接口 | Squad |
 | Fuel crossfeed | n.燃料流通 | Squad |
+| MNA/Mean Anomaly | n.平近点角(原版翻译) | Squad |
+| LAN/Longitude of Ascending Node | n.升交点经度 | Squad、MechJeb2 |
+| LPE/Longitude of Periapsis | n.近点幅角(原版翻译)/近心点经度 | Squad |
 
 ### 生态群落翻译
 
